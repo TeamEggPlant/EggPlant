@@ -43,12 +43,104 @@
 			</div>
 		</div>
 	</div>
-
+	
 	<div class="container">
-		<div class="text-center">
-			<h1>Bootstrap starter template</h1>
-			<p class="lead">Use this document as a way to quickly start any new project.<br> All you get is this text and a mostly barebones HTML document.</p>
+		<!-- Example row of columns -->
+		<div class="row">
+			<div class="col-md-8">
+				<ul>
+					<!-- SET THIS IS CSS !!! --->
+					<li style="display: inline-block"><a href="#ask-question">Ask question</a></li>
+					<li style="display: inline-block"><a href="#question/0">Rules</a></li>
+					<li style="display: inline-block"><a href="#ranking">Ranking</a></li>
+				</ul>
+			</div>
+			<div class="col-md-4">
+				<form method="post" id="search-form">
+					<input type="text" name="search" id="search" placeholder="Search..." />
+					<input type="submit" value="Seach" />
+				</form>
+			</div>
 		</div>
+		
+		<div class="row">
+			<div class="col-md-3">
+				<section id="categories-tab">
+					<h2>Categories</h2>
+					<ul>
+						<li><a href="#category/0">C#</a></li>
+						<li><a href="#category/1">JS</a></li>
+						<li><a href="#category/2">Java</a></li>
+						<li><a href="#category/3">PHP</a></li>
+					</ul>
+				</section>
+				<section id="tags-tab">
+					<h2>Tags</h2>
+					<a href="#tag/0">homework</a>
+					<a href="#tag/1">softuni</a>
+					<a href="#tag/2">teamwork</a>
+					<a href="#tag/3">project</a>
+					<a href="#tag/4">php</a>
+					<a href="#tag/5">help</a>
+					<a href="#tag/6">js</a>
+					<a href="#tag/7">exam</a>
+				</section>
+			</div>
+			
+			<div class="col-md-9">
+				<article>
+					<h2><a href="#post/0">Forum post heading</a></h2>
+					<p>
+						<span>Author: <a href="#user/0">Admin</a></span>,
+						<span>Date: 21-Apr-15</span>,
+						<span>Category: <a href="#tag/1">softuni</a></span>
+					</p>
+					<p>
+						<span>Views: 503</span>,
+						<span>Answers: 18</span>,
+						<span>Last answer: Nakov, 21/04/2015 17:29:20</span>
+					</p>
+				</article>
+				
+				<hr />
+				
+				<article>
+					<h2><a href="#post/0">Help me with this homework</a></h2>
+					<p>
+						<span>Author: <a href="#user/1">Pesho</a></span>,
+						<span>Date: 21-Apr-15</span>,
+						<span>Category: <a href="#tag/3">homework</a></span>
+					</p>
+					<p>
+						<span>Views: 17</span>,
+						<span>Answers: 9</span>,
+						<span>Last answer: Pesho, 21/04/2015 18:19:20</span>
+					</p>
+				</article>
+				
+				<hr />
+				
+				<article>
+					<h2><a href="#post/0">Exam results</a></h2>
+					<p>
+						<span>Author: <a href="#user/0">Gosho</a></span>,
+						<span>Date: 21-Apr-15</span>,
+						<span>Category: <a href="#tag/3">exam</a></span>
+					</p>
+					<p>
+						<span>Views: 234</span>,
+						<span>Answers: 56</span>,
+						<span>Last answer: Pesho, 21/04/2015 18:29:20</span>
+					</p>
+				</article>
+			</div>
+		</div>
+
+		<hr />
+
+		<footer>
+			<p>Team Eggplant teamwork project 2015</p>
+		</footer>
 	</div>
 
 	<div id="login-form-dialog" title="Login form">
