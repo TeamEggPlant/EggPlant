@@ -2,3 +2,27 @@
     display: none;
     color:red; font-size: xx-small;
 }
+
+input {
+	outline: none;
+}
+
+.ui-dialog ul {
+	margin: 0;
+	padding: 0;
+	padding-left: 10px;
+	list-style: none;
+}
+
+.ui-dialog ul li {
+	margin-bottom: 10px;
+}
+
+.ui-dialog label.error {
+	margin-top: 7px;
+	padding: 2px 5px;
+
+	background: #fdcac4;
+	border: 1px solid #f00;
+	color: #000;
+}
