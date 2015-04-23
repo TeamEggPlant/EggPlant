@@ -8,8 +8,6 @@ $(function() {
 		$('#register-form-dialog').dialog('open');
 		e.preventDefault();
 	});
-	
-	$('#confirm-password').on('focusout',checkPassword);
 
 	$('#login-form-dialog').dialog({
 		autoOpen: false,
@@ -24,6 +22,8 @@ $(function() {
 		resizable: false,
 		draggable: true
 	});
+	
+	$('#confirm-password').on('focusout', checkPassword);
 	
 	function checkPassword(){
 		var password = $('#register-password').val();
