@@ -25,6 +25,24 @@ var app = app || {};
             controller.getAboutPage(selector);
             setActivePage('about-page');
         });
+
+        this.post('#/login/auth', function(context) {
+            var formData = this.params;
+            console.log('Login form submitted');
+
+            //TODO: valdiate login form
+
+            return false;
+        });
+
+        this.post('#/register/auth', function(context) {
+            var formData = this.params;
+            console.log('Register form submitted');
+
+            //TODO: valdiate register form
+
+            return false;
+        });
     });
 
     var setActivePage = function setActivePage(pageId) {
