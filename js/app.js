@@ -26,24 +26,50 @@ var app = app || {};
             setActivePage('about-page');
         });
 
-        this.get('#ask-question',function(){
+        this.get('#/ask-question',function(){
             controller.getAskQuestionPage(selector);
+            setActivePage('home-page');
         });
 
         this.post('#/post-question/auth',function(context){
-           var formData = this.params;
+            var formData = this.params;
+
             if(!isQuestionValid(formData)){
                 return;
             }
-           controller.postQuestion(formData);
 
+            controller.postQuestion(formData);
+
+            setActivePage('home-page');
         });
 
         this.post('#/login/auth', function(context) {
             var formData = this.params;
-            console.log('Login form submitted');
 
-            //TODO: valdiate login form
+            var usernameField = formData['login-username'];
+            var passwordField = formData['login-password'];
+            var rememberMeField = formData['login-remember'];
+
+            var loginValidator = app.validator.load();
+
+            loginValidator.setRules({
+                'login-username': {
+                    required: true,
+                    minlength: 4,
+                    maxlength: 25
+                },
+                'login-password': {
+                    required: true,
+                    minlength: 6,
+                    maxlength: 50
+                }
+            })
+            .setData({
+                'login-username': usernameField,
+                'login-password': passwordField
+            })
+            .validate();
+
 
             return false;
         });
@@ -73,5 +99,4 @@ var app = app || {};
     }
 
     app.router.run('#/');
-	
 }());
