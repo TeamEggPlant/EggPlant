@@ -26,6 +26,19 @@ var app = app || {};
             setActivePage('about-page');
         });
 
+        this.get('#ask-question',function(){
+            controller.getAskQuestionPage(selector);
+        });
+
+        this.post('#/post-question/auth',function(context){
+           var formData = this.params;
+            if(!isQuestionValid(formData)){
+                return;
+            }
+           controller.postQuestion(formData);
+
+        });
+
         this.post('#/login/auth', function(context) {
             var formData = this.params;
             console.log('Login form submitted');
@@ -50,6 +63,13 @@ var app = app || {};
             $(this).removeClass('active');
         });
         $('li#' + pageId).addClass('active');
+    };
+
+    function isQuestionValid(data){
+        if(!data.question||!data.title||!data.category){
+            return false;
+        }
+        return true;
     }
 
     app.router.run('#/');

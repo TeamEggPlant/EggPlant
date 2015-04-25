@@ -1,0 +1,37 @@
+<div id="loginbox" style="margin-top:50px;" class="mainbox col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2">
+    <div class="panel panel-info">
+        <div class="panel-heading">
+            <div class="panel-title">Ask a Question</div>
+        </div>
+        <div style="padding-top:30px" class="panel-body">
+
+            <form method="POST" action="#/post-question/auth" id="post-question-form" class="form-horizontal" role="form">
+                <div style="margin-bottom: 25px" class="input-group">
+                    <span class="input-group-addon">
+                        <i class="glyphicon  glyphicon-bookmark"></i>
+                    </span>
+                    <input id="question-title" type="text" class="form-control" name="title" placeholder="Title...">
+                </div>
+
+                <span>Select Category</span>
+                <select class="form-control" name="category">
+                    <option name="php" value="dCf1ljh5jp">PHP</option>
+                    <option name="c#" value="q3PWrjjKwj">C#</option>
+                    <option name="java" value="dX4ZipL9Rm">Java</option>
+                    <option name="javascript" value="p9mYEurTgl">JavaScript</option>
+                </select>
+
+                <div style="margin-bottom: 25px" class="form-group">
+                    <label for="question">Your Question:</label>
+                    <textarea class="form-control" rows="5" id="question" name="question"></textarea>
+                </div>
+
+                <div style="margin-top:10px" class="form-group">
+                    <div class="col-sm-12 controls">
+                        <input type="submit" class="btn btn-success" value="Post Question" />
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
