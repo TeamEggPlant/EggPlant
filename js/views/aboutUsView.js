@@ -1,8 +1,8 @@
 var app = app || {};
 
-app.askQuestionView = (function() {
-    function QuestionView(selector, data) {
-        $.get('templates/ask-question.html', function(template) {
+app.aboutUsView = (function() {
+    function AboutUsView(selector, data) {
+        $.get('templates/aboutUs.html', function(template) {
             var output = Mustache.render(template);
 
             $(selector).html(output);
@@ -11,7 +11,7 @@ app.askQuestionView = (function() {
 
     return {
         load: function (selector, data) {
-            return QuestionView(selector, data);
+            return AboutUsView(selector, data);
         }
     }
 }());

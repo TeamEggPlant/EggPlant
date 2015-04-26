@@ -1,10 +1,22 @@
 var app = app || {};
 
 app.controller = (function() {
-    function Controller() {
-	
+    function Controller(model) {
+	    this._model = model;
     }
 
+    Controller.prototype.loadQuestions = function (selector) {
+        var _this = this;
+        this._model.getHomeView()
+            .then(function (questionsData) {
+                var outputData = {
+                    questions : questionsData.result
+                };
+
+                app.homeView.render(_this, selector, outputData);
+            }
+        )
+    }
     Controller.prototype.getHomePage = function (selector) {
         app.homeView.load(selector);
     };
@@ -17,14 +29,18 @@ app.controller = (function() {
         app.registerView.load(selector);
     };
 
+    Controller.prototype.getAboutPage = function (selector) {
+        app.aboutUsView.load(selector);
+    };
+
     Controller.prototype.getAskQuestionPage = function(selector){
         app.askQuestionView.load(selector);
     };
     Controller.prototype.postQuestion = function(data){
-         var data_ ={};
+        var data_ = {};
         var categoryObject = {};
         data_.title = data.title;
-        data_.text =data.question;
+        data_.text = data.question;
         categoryObject.__type = "Pointer";
         categoryObject.className = "Category";
         categoryObject.objectId = data.category;

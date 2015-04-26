@@ -1,7 +1,13 @@
 var app = app || {};
 
 (function () {
-    var controller = app.controller.load(null);
+	var apiId = 'hApEEqQtk4HmOcjdrqSbnZb3QyjBlAgk9my5J6uB';
+	var restAPIKey = 'x0k6pDLh7MNU1NAZzVNRpVrApDjIwAQ41C64GNSi';
+
+	var headers = app.headers.load(apiId, restAPIKey);
+	var requester = app.requester.load();
+	var questionModel = app.forumDataModel.load('https://api.parse.com/1/', requester, headers, 'Question');
+	var controller = app.controller.load(model);
 
     app.router = Sammy(function () {
         var selector = '#wrapper';
