@@ -35,10 +35,10 @@ app.questionController = (function() {
         )
     };
 
-    Controller.prototype.loadLoginPage = function(selector) {
-        var _this = this;
-        //this._model.get
-    };
+    //Controller.prototype.loadLoginPage = function(selector) {
+    //    var _this = this;
+    //    //this._model.get
+    //};
     //Controller.prototype.getLoginPage = function (selector) {
     //    app.loginView.load(selector);
     //};

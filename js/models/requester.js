@@ -12,6 +12,11 @@ app.requester = (function() {
         return makeRequest('POST', headers, url, data);
     };
 
+    Requester.prototype.login = function (url, headers, username, password) {
+        var userData = '?username=' + username + '&password=' + password;
+        return makeRequest('GET', headers, url + userData);
+    };
+
     function makeRequest(method, headers, url, data) {
         var deffer = Q.defer();
 

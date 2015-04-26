@@ -1,40 +1,43 @@
 var app = app || {};
 
 (function () {
+    var apiURL = 'https://api.parse.com/1/';
 	var apiId = 'hApEEqQtk4HmOcjdrqSbnZb3QyjBlAgk9my5J6uB';
 	var restAPIKey = 'x0k6pDLh7MNU1NAZzVNRpVrApDjIwAQ41C64GNSi';
 
 	var headers = app.headers.load(apiId, restAPIKey);
 	var requester = app.requester.load();
-	var questionModel = app.forumDataModel.load('https://api.parse.com/1/', requester, headers, 'Question/');
+	var questionModel = app.forumDataModel.load(apiURL, requester, headers, 'Question/');
+	var authModel = app.forumAuthModel.load(apiURL, requester, headers);
 	var questionController = app.questionController.load(questionModel);
+	var loginController = app.loginController.load(authModel);
 
     app.router = Sammy(function () {
         var selector = '#wrapper';
 
         this.get('#/', function () {
             questionController.loadQuestions(selector);
-            setActivePage('home-page');
+            app.setActivePage('home-page');
         });
 
-    //    this.get('#/login', function () {
-    //        controller.getLoginPage(selector);
-    //        setActivePage('login-page');
-    //    });
+        this.get('#/login', function () {
+            loginController.loadLoginPage(selector);
+            app.setActivePage('login-page');
+        });
     //
     //    this.get('#/register', function () {
     //        controller.getRegisterPage(selector);
-    //        setActivePage('register-page');
+    //        app.setActivePage('register-page');
     //    });
     //
     //    this.get('#/about', function () {
     //        controller.getAboutPage(selector);
-    //        setActivePage('about-page');
+    //        app.setActivePage('about-page');
     //    });
     //
         this.get('#/ask-question', function() {
             questionController.loadAskQuestionPage(selector);
-            setActivePage('home-page');
+            app.setActivePage('home-page');
         });
     //
     //    this.post('#/post-question/auth',function(context){
@@ -46,7 +49,7 @@ var app = app || {};
     //
     //        controller.postQuestion(formData);
     //
-    //        setActivePage('home-page');
+    //        app.setActivePage('home-page');
     //    });
     //
     //    this.post('#/login/auth', function(context) {
@@ -90,7 +93,7 @@ var app = app || {};
     //    });
     });
 
-    var setActivePage = function setActivePage(pageId) {
+    app.setActivePage = function setActivePage(pageId) {
         $('.nav').find('li').each(function () {
             $(this).removeClass('active');
         });
