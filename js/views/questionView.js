@@ -2,7 +2,7 @@ var app = app || {};
 
 app.questionView = (function() {
     function render(selector, data) {
-        $.get('templates/questionBody.html', function(template) {
+        $.get('templates/question-view.html', function(template) {
             var output = Mustache.render(template, data);
             $(selector).html(output);
         });

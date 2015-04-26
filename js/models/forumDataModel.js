@@ -13,6 +13,15 @@ app.forumDataModel = (function() {
         return this._requester.get(this._serviceUrl, headers);
     };
 
+    ForumDataModel.prototype.getQuestion = function(questionId) {
+        var deffer = Q.defer();
+        var headers = this._headers.getHeaders();
+
+        deffer.resolve(this._requester.get(this._serviceUrl + questionId + '?include=categoryId,creator', headers));
+
+        return deffer.promise;
+    };
+
     ForumDataModel.prototype.addQuestion = function(data) {
         var deffer = Q.defer();
         var headers = this._headers.getHeaders();

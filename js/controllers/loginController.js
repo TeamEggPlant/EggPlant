@@ -13,6 +13,8 @@ app.loginController = (function() {
         this._model.loginUser(username, password)
             .then(function(data) {
                 sessionStorage['logged-in'] = data.sessionToken;
+                sessionStorage['username'] = username;
+                sessionStorage['userId'] = data.objectId;
 
                 app.setActivePage('home-page');
                 app.homeView.render(this, selector);

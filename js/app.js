@@ -28,6 +28,13 @@ var app = app || {};
         this.get('#/post', function() {
             questionController.loadQuestion(selector);
         });
+
+        this.get('#/view-post/:id', function() {
+            var postId = this.params['id'];
+
+            questionController.loadQuestion('#wrapper', postId);
+        });
+
     //
     //    this.get('#/register', function () {
     //        controller.getRegisterPage(selector);

@@ -9,16 +9,23 @@ app.askQuestionView = (function() {
         })
             .then(function() {
                 $('#ask').click(function() {
-                    var questionTitle = $('#question-title').val();
-                    var questionText = $('#question').val();
                     var questionCategoryId = $('#question-category :selected').val();
-                    var questionCategory = {
-                        '__type': 'Pointer',
-                        'className': 'Category',
-                        'objectId': questionCategoryId
+                    var questionData = {
+                        title: $('#question-title').val(),
+                        text: $('#question').val(),
+                        categoryId: {
+                            '__type': 'Pointer',
+                            'className': 'Category',
+                            'objectId': questionCategoryId
+                        },
+                        creator: {
+                            '__type': 'Pointer',
+                            'className': '_User',
+                            'objectId': sessionStorage['userId']
+                        }
                     };
 
-                    controller.addQuestion('#wrapper', questionTitle, questionText, questionCategory);
+                    controller.addQuestion('#wrapper', questionData);
                 })
             });
     }

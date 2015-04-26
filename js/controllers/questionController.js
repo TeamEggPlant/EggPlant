@@ -13,40 +13,44 @@ app.questionController = (function() {
                     questions : questionsData.results
                 };
 
+                console.log(outputData);
+
                 app.homeView.render(_this, selector, outputData);
             }, function(error) {
                 console.log(error.responseText);
             })
     };
 
-    Controller.prototype.loadQuestion = function(selector, data, objectId) {
+    Controller.prototype.loadQuestion = function(selector, objectId) {
         var _this = this;
-        this._model.getHomeView()
+
+        this._model.getQuestion(objectId)
             .then(function(questionData) {
-                for (var question in data['questions']) {
-                    if (question['objectId'] == objectId) {
-                        var outputData = {
-                            title : question['title'],
-                            text : question['text'],
-                            categoryId : question['categoryId']['objectId']
-                        };
-                    }
-                }
+                console.log(questionData);
+                var outputData = {
+                    objectId : questionData['objectId'],
+                    title : questionData['title'],
+                    text : questionData['text'],
+                    categoryId : questionData['categoryId']['objectId'],
+                    categoryName : questionData['categoryId']['categoryName'],
+                    authorId : questionData['creator']['objectId'],
+                    authorName : questionData['creator']['username'],
+                    createdAt : questionData['createdAt']
+                };
 
                 app.questionView.render(selector, outputData);
+            },
+            function(error) {
+                console.log(error);
             })
     };
 
-    Controller.prototype.addQuestion = function(selector, questionTitle, questionText, questionCategoryId) {
-        var question = {
-            title : questionTitle,
-            text : questionText,
-            categoryId : questionCategoryId
-        };
+    Controller.prototype.addQuestion = function(selector, questionData) {
+        this._model.addQuestion(questionData)
+            .then(function(data) {
+                var postId = data.objectId;
 
-        this._model.addQuestion(question)
-            .then(function() {
-                app.askedQuestionView.render(selector, question);
+                Controller.prototype.loadQuestion(selector, postId);
             }, function(error) {
                 console.log(error.responseText);
             }

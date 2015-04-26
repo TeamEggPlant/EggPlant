@@ -41,8 +41,8 @@
 
     <div class="col-md-9">
         {{#questions}}
-        <article class="post" about="{{objectId}}">
-            <h2>{{title}}</h2>
+        <article class="post" about="">
+            <h2><a href="#/view-post/{{objectId}}" class="post-link">{{title}}</a></h2>
             <p>
 <!--                <span>Author: <a href="#user/1">Pesho</a></span>,-->
                 <span>Date: {{createdAt}}</span>,
