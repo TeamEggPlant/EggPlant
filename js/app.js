@@ -24,6 +24,10 @@ var app = app || {};
             loginController.loadLoginPage(selector);
             app.setActivePage('login-page');
         });
+
+        this.get('#/post', function() {
+            questionController.loadQuestion(selector);
+        });
     //
     //    this.get('#/register', function () {
     //        controller.getRegisterPage(selector);
@@ -34,7 +38,7 @@ var app = app || {};
     //        controller.getAboutPage(selector);
     //        app.setActivePage('about-page');
     //    });
-    //
+
         this.get('#/ask-question', function() {
             questionController.loadAskQuestionPage(selector);
             app.setActivePage('home-page');

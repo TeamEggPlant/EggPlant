@@ -40,9 +40,9 @@
     </div>
 
     <div class="col-md-9">
-        <article>
-            {{#questions}}
-            <h2><a href="#post/0">{{title}}</a></h2>
+        {{#questions}}
+        <article class="post" about="{{objectId}}">
+            <h2>{{title}}</h2>
             <p>
 <!--                <span>Author: <a href="#user/1">Pesho</a></span>,-->
                 <span>Date: {{createdAt}}</span>,
@@ -53,8 +53,8 @@
                 <span>Answers: 9</span>,
                 <span>Last answer: Pesho, 21/04/2015 18:19:20</span>
             </p>-->
-            {{/questions}}
         </article>
+        {{/questions}}
 
         <article id="nextQuestion">
         </article>

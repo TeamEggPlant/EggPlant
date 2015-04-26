@@ -19,6 +19,24 @@ app.questionController = (function() {
             })
     };
 
+    Controller.prototype.loadQuestion = function(selector, data, objectId) {
+        var _this = this;
+        this._model.getHomeView()
+            .then(function(questionData) {
+                for (var question in data['questions']) {
+                    if (question['objectId'] == objectId) {
+                        var outputData = {
+                            title : question['title'],
+                            text : question['text'],
+                            categoryId : question['categoryId']['objectId']
+                        };
+                    }
+                }
+
+                app.questionView.render(selector, outputData);
+            })
+    };
+
     Controller.prototype.addQuestion = function(selector, questionTitle, questionText, questionCategoryId) {
         var question = {
             title : questionTitle,
