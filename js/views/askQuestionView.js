@@ -8,10 +8,17 @@ app.askQuestionView = (function() {
             $(selector).html(output);
         })
             .then(function() {
-                $('ask').click(function() {
+                $('#ask').click(function() {
                     var questionTitle = $('#question-title').val();
                     var questionText = $('#question').val();
-                    controller.addQuestion('#nextQuestion', questionTitle, questionText);
+                    var questionCategoryId = $('#question-category :selected').val();
+                    var questionCategory = {
+                        '__type': 'Pointer',
+                        'className': 'Category',
+                        'objectId': questionCategoryId
+                    };
+
+                    controller.addQuestion('#wrapper', questionTitle, questionText, questionCategory);
                 })
             });
     }

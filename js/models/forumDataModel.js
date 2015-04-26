@@ -14,9 +14,12 @@ app.forumDataModel = (function() {
     };
 
     ForumDataModel.prototype.addQuestion = function(data) {
+        var deffer = Q.defer();
         var headers = this._headers.getHeaders();
 
-        this._requester.post(this._serviceUrl, headers, data);
+        deffer.resolve(this._requester.post(this._serviceUrl, headers, data));
+
+        return deffer.promise;
     };
 
     return {

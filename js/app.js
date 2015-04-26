@@ -32,7 +32,7 @@ var app = app || {};
     //        setActivePage('about-page');
     //    });
     //
-        this.get('#/ask-question',function(){
+        this.get('#/ask-question', function() {
             questionController.loadAskQuestionPage(selector);
             setActivePage('home-page');
         });

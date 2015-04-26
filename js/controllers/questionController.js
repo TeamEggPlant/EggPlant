@@ -19,10 +19,11 @@ app.questionController = (function() {
             })
     };
 
-    Controller.prototype.addQuestion = function(selector, questionTitle, questionText) {
+    Controller.prototype.addQuestion = function(selector, questionTitle, questionText, questionCategoryId) {
         var question = {
             title : questionTitle,
-            text : questionText
+            text : questionText,
+            categoryId : questionCategoryId
         };
 
         this._model.addQuestion(question)
