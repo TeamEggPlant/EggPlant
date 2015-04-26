@@ -1,22 +1,15 @@
 var app = app || {};
 
 app.requester = (function() {
-    function Requester(baseUrl) {
-        this._baseUrl = baseUrl;
+    function Requester() {
     }
 
-    Requester.prototype.get = function (serviceUrl) {
-        var headers = getHeaders();
-        var url = this._baseUrl + serviceUrl;
-
+    Requester.prototype.get = function (url, headers) {
         return makeRequest('GET', headers, url);
     };
 
-    Requester.prototype.post = function (serviceUrl,data) {
-        var headers = getHeaders();
-        var url = this._baseUrl + serviceUrl;
-
-        return makeRequest('POST', headers, url,data);
+    Requester.prototype.post = function (url, headers, data) {
+        return makeRequest('POST', headers, url, data);
     };
 
     function makeRequest(method, headers, url, data) {
@@ -38,23 +31,9 @@ app.requester = (function() {
         return deffer.promise;
     }
 
-    function getHeaders() {
-        var headers = {
-			'X-Parse-Application-Id' : 'hApEEqQtk4HmOcjdrqSbnZb3QyjBlAgk9my5J6uB',
-			'X-Parse-REST-API-Key' : 'x0k6pDLh7MNU1NAZzVNRpVrApDjIwAQ41C64GNSi',
-            'Content-Type' : 'application/json'
-        };
-
-        if (sessionStorage['logged-in']) {
-            headers['X-Parse-Session-Token'] = sessionStorage.sessionToken;
-        }
-
-        return headers;
-    }
-
     return {
-        load: function (baseUrl) {
-            return new Requester(baseUrl);
+        load: function () {
+            return new Requester();
         }
     }
 }());
