@@ -4,13 +4,11 @@ app.validator = (function() {
     function Validator() {
         this._rules = null;
         this._data = null;
-        this._errors = {};
+        this._errorMessages = null;
+        this._errors = [];
     }
 
-    var validateRule = function(ruleKey, ruleValue, ruleData) {
-
-        console.log(ruleKey + ': ' + ruleValue + ' => ' + ruleData);
-
+    var validateRule = function validateRule(ruleKey, ruleValue, ruleData) {
         switch(ruleKey) {
             case 'required':
                 if (ruleValue === true && ruleData) {
@@ -30,8 +28,14 @@ app.validator = (function() {
                 }
 
                 break;
+            case 'regex':
+                if (ruleValue.test(ruleData)) {
+                    return true;
+                }
+
+                break;
             default:
-                throw new Error({ 'message': 'Unknown validation rule!'})
+                throw new Error('Unknown validation rule!');
         }
 
         return false;
@@ -58,11 +62,18 @@ app.validator = (function() {
         $.each(this._rules, function(rulesJSONKey, rulesJSON) {
             $.each(rulesJSON, function(ruleKey, ruleValue) {
                 var ruleData = _this._data[rulesJSONKey];
-
                 var ruleValidationResult = validateRule(ruleKey, ruleValue, ruleData);
+
                 if (!ruleValidationResult) {
-                    // TODO: set error message as value of error key
-                    //this._errors[ruleKey] = true
+                    var errorMessage = _this._errorMessages[rulesJSONKey][ruleKey];
+
+                    if (errorMessage === undefined) {
+                        throw new Error('Validation rule has no error message!');
+                    }
+
+                    _this._errors.push(_this._errorMessages[rulesJSONKey][ruleKey]);
+
+                    return false;
                 }
             });
         });
@@ -72,21 +83,23 @@ app.validator = (function() {
 
     // checks if validation passed or not
     Validator.prototype.isValid = function() {
-        // TODO
+        if (this._errors.length === 0) {
+            return true;
+        }
 
-        return this;
+        return false;
     };
 
     // sets error messages for the validation rules
-    Validator.prototype.setErrorMessages = function(jsonMessages) {
-        // TODO
+    Validator.prototype.setErrorMessages = function(jsonErrorMessages) {
+        this._errorMessages = jsonErrorMessages;
 
         return this;
     };
 
-    // returns all error messages
+    // returns array containing all error messages
     Validator.prototype.getErrorMessages = function() {
-        // TODO
+        return this._errors;
 
         return this;
     };
