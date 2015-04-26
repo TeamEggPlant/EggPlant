@@ -7,13 +7,13 @@ var app = app || {};
 	var headers = app.headers.load(apiId, restAPIKey);
 	var requester = app.requester.load();
 	var questionModel = app.forumDataModel.load('https://api.parse.com/1/', requester, headers, 'Question/');
-	var controller = app.controller.load(questionModel);
+	var questionController = app.questionController.load(questionModel);
 
     app.router = Sammy(function () {
         var selector = '#wrapper';
 
         this.get('#/', function () {
-            controller.loadQuestions(selector);
+            questionController.loadQuestions(selector);
             setActivePage('home-page');
         });
 
