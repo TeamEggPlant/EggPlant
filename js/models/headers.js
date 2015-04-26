@@ -10,7 +10,7 @@ app.headers = (function() {
         var headers = {
             'X-Parse-Application-Id': this.appId,
             'X-Parse-REST-API-Key': this.restAPIKey,
-            //'X-Parse-Master-Key' : this.masterKey,
+//            'X-Parse-Master-Key' : this.masterKey,
             'Content-Type': 'application/json'
         };
 
