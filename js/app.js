@@ -32,10 +32,10 @@ var app = app || {};
     //        setActivePage('about-page');
     //    });
     //
-    //    this.get('#/ask-question',function(){
-    //        controller.getAskQuestionPage(selector);
-    //        setActivePage('home-page');
-    //    });
+        this.get('#/ask-question',function(){
+            questionController.loadAskQuestionPage(selector);
+            setActivePage('home-page');
+        });
     //
     //    this.post('#/post-question/auth',function(context){
     //        var formData = this.params;

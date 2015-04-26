@@ -1,17 +1,24 @@
 var app = app || {};
 
 app.askQuestionView = (function() {
-    function QuestionView(selector, data) {
+    function render(controller, selector) {
         $.get('templates/ask-question.html', function(template) {
             var output = Mustache.render(template);
 
             $(selector).html(output);
         })
+            .then(function() {
+                $('ask').click(function() {
+                    var questionTitle = $('#question-title').val();
+                    var questionText = $('#question').val();
+                    controller.addQuestion('#nextQuestion', questionTitle, questionText);
+                })
+            });
     }
 
     return {
-        load: function (selector, data) {
-            return QuestionView(selector, data);
+        render: function(controller, selector) {
+            return render(controller, selector);
         }
     }
 }());

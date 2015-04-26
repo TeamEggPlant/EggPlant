@@ -8,7 +8,7 @@ app.questionController = (function() {
     Controller.prototype.loadQuestions = function(selector) {
         var _this = this;
         this._model.getHomeView()
-            .then(function (questionsData) {
+            .then(function(questionsData) {
                 var outputData = {
                     questions : questionsData.results
                 };
@@ -17,6 +17,21 @@ app.questionController = (function() {
             }, function(error) {
                 console.log(error.responseText);
             })
+    };
+
+    Controller.prototype.addQuestion = function(selector, questionTitle, questionText) {
+        var question = {
+            title : questionTitle,
+            text : questionText
+        };
+
+        this._model.addQuestion(question)
+            .then(function() {
+                app.askedQuestionView.render(selector, question);
+            }, function(error) {
+                console.log(error.responseText);
+            }
+        )
     };
 
     Controller.prototype.loadLoginPage = function(selector) {
@@ -35,9 +50,10 @@ app.questionController = (function() {
     //    app.aboutUsView.load(selector);
     //};
     //
-    //Controller.prototype.getAskQuestionPage = function(selector){
-    //    app.askQuestionView.load(selector);
-    //};
+    Controller.prototype.loadAskQuestionPage = function(selector){
+        app.askQuestionView.render(this, selector);
+    };
+
     //Controller.prototype.postQuestion = function(data){
     //    var data_ = {};
     //    var categoryObject = {};

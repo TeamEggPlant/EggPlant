@@ -7,10 +7,16 @@ app.forumDataModel = (function() {
         this._serviceUrl = baseUrl + 'classes/' + serviceClass;
     }
 
-    ForumDataModel.prototype.getHomeView = function () {
+    ForumDataModel.prototype.getHomeView = function() {
         var headers = this._headers.getHeaders();
 
         return this._requester.get(this._serviceUrl, headers)
+    };
+
+    ForumDataModel.prototype.addQuestion = function(data) {
+        var headers = this._headers.getHeaders();
+
+        this._requester.post(this._serviceUrl, headers, data);
     };
 
     return {
