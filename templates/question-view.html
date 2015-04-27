@@ -1,13 +1,10 @@
 <h2><a href="#/view-post/{{objectId}}" class="post-link">{{title}}</a></h2>
 <p>
-    <span>Author: <a href="#/user/{{authorId}}">{{authorName}}</a></span>,
-    <span>Date: {{createdAt}}</span>,
-    <span>Category: <a href="#/category/{{categoryId}}">{{categoryName}}</a></span>
-</p>
-<p>
-    <span>Views: ?</span>,
-    <span>Answers: ?</span>,
-    <span>Last answer: ?</span>
+    <span>Author: <a href="#/user/{{authorId}}">{{authorName}}</a>,</span>
+    <span>Date: {{createdAt}},</span>
+    <span>Category: <a href="#/category/{{categoryId}}">{{categoryName}}</a>,</span>
+    <span>Views: ???,</span>
+    <span>Tags: ???</span>
 </p>
 
 <hr />
@@ -15,10 +12,25 @@
 <p>
     {{text}}
 </p>
-<p id="isNotLogged" style="display: none; color: FF0000;">You need to login first!</p>
-<div id="postedCommentBody"></div>
-<div id="commentAll" style="display: none;">
-    <label>Your comment:</label><br />
-    <textarea rows="3" cols="60" id="commentBody"></textarea>
+
+<hr />
+
+<div id="answer-holder">
+    <div id="error-holder"></div>
+    <label>Your answer:</label><br />
+    <textarea rows="3" cols="60" id="answer-body"></textarea><br />
+    <button id="add-answer">Answer</button>
 </div>
-<button id = "comment">Comment</button>
+
+<h3>Answers:</h3>
+
+{{#answers.length}}
+<div id="answers-holder">
+    {{#answers}}
+        <p>{{answerBody}}</p>
+        <p></p>
+        <p>Author: <a href="#/user/{{authorUserId}}">{{authorUsername}}</a>, Date: {{createdAt}}</p>
+        <hr />
+    {{/answers}}
+</div>
+{{/answers.length}}

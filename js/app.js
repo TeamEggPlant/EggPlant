@@ -40,73 +40,10 @@ var app = app || {};
             app.setActivePage('register-page');
         });
 
-    //
-    //    this.get('#/register', function () {
-    //        controller.getRegisterPage(selector);
-    //        app.setActivePage('register-page');
-    //    });
-    //
-    //    this.get('#/about', function () {
-    //        controller.getAboutPage(selector);
-    //        app.setActivePage('about-page');
-    //    });
-
         this.get('#/ask-question', function() {
             questionController.loadAskQuestionPage(selector);
             app.setActivePage('home-page');
         });
-    //
-    //    this.post('#/post-question/auth',function(context){
-    //        var formData = this.params;
-    //
-    //        if(!isQuestionValid(formData)){
-    //            return;
-    //        }
-    //
-    //        controller.postQuestion(formData);
-    //
-    //        app.setActivePage('home-page');
-    //    });
-    //
-    //    this.post('#/login/auth', function(context) {
-    //        var formData = this.params;
-    //
-    //        var usernameField = formData['login-username'];
-    //        var passwordField = formData['login-password'];
-    //        var rememberMeField = formData['login-remember'];
-    //
-    //        var loginValidator = app.validator.load();
-    //
-    //        loginValidator.setRules({
-    //            'login-username': {
-    //                required: true,
-    //                minlength: 4,
-    //                maxlength: 25
-    //            },
-    //            'login-password': {
-    //                required: true,
-    //                minlength: 6,
-    //                maxlength: 50
-    //            }
-    //        })
-    //        .setData({
-    //            'login-username': usernameField,
-    //            'login-password': passwordField
-    //        })
-    //        .validate();
-    //
-    //
-    //        return false;
-    //    });
-    //
-    //    this.post('#/register/auth', function(context) {
-    //        var formData = this.params;
-    //        console.log('Register form submitted');
-    //
-    //        //TODO: valdiate register form
-    //
-    //        return false;
-    //    });
     });
 
     app.setActivePage = function setActivePage(pageId) {

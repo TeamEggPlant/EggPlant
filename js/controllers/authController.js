@@ -161,7 +161,6 @@ app.authController = (function() {
                         'repeatPassword' : repeatPassword,
                         'email' : email
                     };
-                    console.log(outputData);
 
                     app.registerView.render(_this, selector, outputData);
                 }

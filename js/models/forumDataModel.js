@@ -5,6 +5,7 @@ app.forumDataModel = (function() {
         this._requester = requester;
         this._headers = headers;
         this._serviceUrl = baseUrl + 'classes/' + serviceClass;
+        this._baseUrl = baseUrl + 'classes/';
     }
 
     ForumDataModel.prototype.getHomeView = function() {
@@ -18,6 +19,15 @@ app.forumDataModel = (function() {
         var headers = this._headers.getHeaders();
 
         deffer.resolve(this._requester.get(this._serviceUrl + questionId + '?include=categoryId,creator', headers));
+
+        return deffer.promise;
+    };
+
+    ForumDataModel.prototype.getQuestionAnswers = function(questionId) {
+        var deffer = Q.defer();
+        var headers = this._headers.getHeaders();
+
+        deffer.resolve(this._requester.get(this._baseUrl + 'Answer/?where={"questionId":{"$inQuery":{"where":{"objectId":"' + questionId + '"},"className":"Question"}}}&include=creator&order=-createdAt', headers));
 
         return deffer.promise;
     };

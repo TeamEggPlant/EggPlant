@@ -42,75 +42,89 @@ app.questionController = (function() {
     Controller.prototype.loadQuestion = function(selector, objectId) {
         var _this = this;
 
-        this._model.getQuestion(objectId)
-            .then(function(questionData) {
-//                console.log(questionData);
-                var outputData = {
-                    objectId : questionData['objectId'],
-                    title : questionData['title'],
-                    text : questionData['text'],
-                    categoryId : questionData['categoryId']['objectId'],
-                    categoryName : questionData['categoryId']['categoryName'],
-                    authorId : questionData['creator']['objectId'],
-                    authorName : questionData['creator']['username'],
-                    createdAt : questionData['createdAt']
-                };
+        Q.all([
+            this._model.getQuestion(objectId),
+            this._model.getQuestionAnswers(objectId),
+        ]).then(function(questionData){
+            var question = questionData[0];
+            var questionAnswersData = questionData[1].results;
 
-                app.questionView.render(_this, selector, outputData);
-            },
-            function(error) {
-                console.log(error);
-            })
+            for (var answerIndex in questionAnswersData) {
+                questionAnswersData[answerIndex]['authorUsername'] = questionAnswersData[answerIndex]['creator']['username'];
+                questionAnswersData[answerIndex]['authorUserId'] = questionAnswersData[answerIndex]['creator']['objectId'];
+            }
+
+            var outputData = {
+                objectId : question['objectId'],
+                title : question['title'],
+                text : question['text'],
+                categoryId : question['categoryId']['objectId'],
+                categoryName : question['categoryId']['categoryName'],
+                authorId : question['creator']['objectId'],
+                authorName : question['creator']['username'],
+                createdAt : question['createdAt'],
+                answers : questionAnswersData
+            };
+
+            app.questionView.render(_this, selector, outputData);
+        },
+        function(error) {
+            console.log(error);
+        });
     };
 
-    Controller.prototype.addComment = function(selector, data) {
-        this._model.addComment(data)
-            .then(function(data) {
-                var postId = data.questionId.objectId;
+    Controller.prototype.addComment = function(selector, commentData) {
+        var _this = this;
 
-                //currently this doesn't work
-                //what needs to be done is the following
-                //make another HTML just for the comments
-                //make another view to support the beforementioned HTML
-                //make sure the view is built with $(selector).append rather than $(selector).html(output)
-                //OR you can just rush it and build it on top of question-view... as I've done now....
-                window.location = '#/view-post/' + postId;
-            }, function(error) {
-                console.log(error.responseText);
-            })
+        var answerValidator = app.validator.load();
+        answerValidator.setRules({
+            'answer': {
+                required: true,
+                minlength: 4
+            }
+        })
+        .setErrorMessages({
+            'answer': {
+                required: 'Please enter answer!',
+                minlength: 'Your answer must be at least 4 characters long!'
+            }
+        })
+        .setData({
+            'answer': commentData.answerBody
+        })
+        .validate();
+
+        var validAnswer = answerValidator.isValid();
+        if (validAnswer) {
+            this._model.addComment(commentData)
+                .then(function(data) {
+                    console.log();
+
+                    var outputData = {
+                        answerBody : commentData.answerBody,
+                        authorUserId : sessionStorage['userId'],
+                        authorUsername : sessionStorage['username'],
+                        createdAt : data.createdAt
+                    };
+
+                    app.newAnswerView.render('#answers-holder', outputData);
+                }, function(error) {
+                    console.log(error.responseText);
+                });
+        }
+        else {
+            var outputData = answerValidator.getErrorMessages();
+            outputData.error = outputData.errorMessages[0].message;
+            outputData.answer = commentData.answerBody;
+
+            app.errorView.render('#error-holder', outputData);
+        }
     };
 
-    //Controller.prototype.loadLoginPage = function(selector) {
-    //    var _this = this;
-    //    //this._model.get
-    //};
-    //Controller.prototype.getLoginPage = function (selector) {
-    //    app.loginView.load(selector);
-    //};
-    //
-    //Controller.prototype.getRegisterPage = function (selector) {
-    //    app.registerView.load(selector);
-    //};
-    //
-    //Controller.prototype.getAboutPage = function (selector) {
-    //    app.aboutUsView.load(selector);
-    //};
-    //
     Controller.prototype.loadAskQuestionPage = function(selector){
+        console.log(this);
         app.askQuestionView.render(this, selector);
     };
-
-    //Controller.prototype.postQuestion = function(data){
-    //    var data_ = {};
-    //    var categoryObject = {};
-    //    data_.title = data.title;
-    //    data_.text = data.question;
-    //    categoryObject.__type = "Pointer";
-    //    categoryObject.className = "Category";
-    //    categoryObject.objectId = data.category;
-    //    data_.categoryId = categoryObject;
-    //    app.requester.load('https://api.parse.com/1/classes').post('/Question',data_);
-    //};
 
     return {
         load: function(model) {
