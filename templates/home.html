@@ -41,74 +41,19 @@
 
     <div class="col-md-9">
         {{#questions}}
-        <article class="post" about="">
+        <article class="post">
             <h2><a href="#/view-post/{{objectId}}" class="post-link">{{title}}</a></h2>
             <p>
-<!--                <span>Author: <a href="#user/1">Pesho</a></span>,-->
+                <span>Author: <a href="#/user/{{authorId}}">{{authorName}}</a></span>,
                 <span>Date: {{createdAt}}</span>,
-<!--                <span>Category: <a href="#tag/3">homework</a></span>-->
+                <span>Category: <a href="#/category/{{category}}">{{categoryName}}</a></span>
             </p>
-<!--            <p>
-                <span>Views: 17</span>,
-                <span>Answers: 9</span>,
-                <span>Last answer: Pesho, 21/04/2015 18:19:20</span>
-            </p>-->
+            <p>
+                <span>Views: ?</span>,
+                <span>Answers: ?</span>,
+                <span>Last answer: ?</span>
+            </p>
         </article>
         {{/questions}}
-
-        <article id="nextQuestion">
-        </article>
-
-    <!--        <article>
-            <h2><a href="#post/0">Forum post heading</a></h2>
-            <p>
-                <span>Author: <a href="#user/0">Admin</a></span>,
-                <span>Date: 21-Apr-15</span>,
-                <span>Category: <a href="#tag/1">softuni</a></span>
-            </p>
-            <p>
-                <span>Views: 503</span>,
-                <span>Answers: 18</span>,
-                <span>Last answer: Nakov, 21/04/2015 17:29:20</span>
-            </p>
-        </article>
-
-        <hr />
-
-        <article>
-            <h2><a href="#post/0">Help me with this homework</a></h2>
-            <p>
-                <span>Author: <a href="#user/1">Pesho</a></span>,
-                <span>Date: 21-Apr-15</span>,
-                <span>Category: <a href="#tag/3">homework</a></span>
-            </p>
-            <p>
-                <span>Views: 17</span>,
-                <span>Answers: 9</span>,
-                <span>Last answer: Pesho, 21/04/2015 18:19:20</span>
-            </p>
-        </article>
-
-        <hr />
-
-        <article>
-            <h2><a href="#post/0">Exam results</a></h2>
-            <p>
-                <span>Author: <a href="#user/0">Gosho</a></span>,
-                <span>Date: 21-Apr-15</span>,
-                <span>Category: <a href="#tag/3">exam</a></span>
-            </p>
-            <p>
-                <span>Views: 234</span>,
-                <span>Answers: 56</span>,
-                <span>Last answer: Pesho, 21/04/2015 18:29:20</span>
-            </p>
-        </article>-->
     </div>
-</div>
-<div>fjklaewhg;
-    {{#questions}}
-    <span>{{title}}</span>
-    <span>{{text}}</span>
-    {{/questions}}
 </div>

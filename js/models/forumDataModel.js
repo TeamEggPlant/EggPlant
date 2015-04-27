@@ -10,7 +10,7 @@ app.forumDataModel = (function() {
     ForumDataModel.prototype.getHomeView = function() {
         var headers = this._headers.getHeaders();
 
-        return this._requester.get(this._serviceUrl, headers);
+        return this._requester.get(this._serviceUrl + '?include=categoryId,creator&order=-createdAt', headers);
     };
 
     ForumDataModel.prototype.getQuestion = function(questionId) {

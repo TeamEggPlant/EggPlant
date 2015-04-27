@@ -16,8 +16,9 @@ app.loginController = (function() {
                 sessionStorage['username'] = username;
                 sessionStorage['userId'] = data.objectId;
 
-                app.setActivePage('home-page');
-                app.homeView.render(this, selector);
+                //app.setActivePage('home-page');
+                //app.homeView.render(this, selector);
+                window.location = '#/';
             }, function(error) {
                 var errorMessage = error.responseJSON.error;
 

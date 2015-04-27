@@ -13,12 +13,31 @@ app.questionController = (function() {
                     questions : questionsData.results
                 };
 
+                for (var questionIndex in outputData.questions) {
+                    outputData.questions[questionIndex]['authorId'] = outputData.questions[questionIndex]['creator']['objectId'];
+                    outputData.questions[questionIndex]['authorName'] = outputData.questions[questionIndex]['creator']['username'];
+                    outputData.questions[questionIndex]['category'] = outputData.questions[questionIndex]['categoryId']['objectId'];
+                    outputData.questions[questionIndex]['categoryName'] = outputData.questions[questionIndex]['categoryId']['categoryName'];
+                }
+
                 console.log(outputData);
 
                 app.homeView.render(_this, selector, outputData);
             }, function(error) {
                 console.log(error.responseText);
             })
+    };
+
+    Controller.prototype.addQuestion = function(selector, questionData) {
+        this._model.addQuestion(questionData)
+            .then(function(data) {
+                var postId = data.objectId;
+
+                window.location = '#/view-post/' + postId;
+            }, function(error) {
+                console.log(error.responseText);
+            }
+        )
     };
 
     Controller.prototype.loadQuestion = function(selector, objectId) {
@@ -43,18 +62,6 @@ app.questionController = (function() {
             function(error) {
                 console.log(error);
             })
-    };
-
-    Controller.prototype.addQuestion = function(selector, questionData) {
-        this._model.addQuestion(questionData)
-            .then(function(data) {
-                var postId = data.objectId;
-
-                Controller.prototype.loadQuestion(selector, postId);
-            }, function(error) {
-                console.log(error.responseText);
-            }
-        )
     };
 
     //Controller.prototype.loadLoginPage = function(selector) {
