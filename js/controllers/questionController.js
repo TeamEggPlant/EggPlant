@@ -44,7 +44,7 @@ app.questionController = (function() {
 
         this._model.getQuestion(objectId)
             .then(function(questionData) {
-                console.log(questionData);
+//                console.log(questionData);
                 var outputData = {
                     objectId : questionData['objectId'],
                     title : questionData['title'],
@@ -56,10 +56,27 @@ app.questionController = (function() {
                     createdAt : questionData['createdAt']
                 };
 
-                app.questionView.render(selector, outputData);
+                app.questionView.render(_this, selector, outputData);
             },
             function(error) {
                 console.log(error);
+            })
+    };
+
+    Controller.prototype.addComment = function(selector, data) {
+        this._model.addComment(data)
+            .then(function(data) {
+                var postId = data.questionId.objectId;
+
+                //currently this doesn't work
+                //what needs to be done is the following
+                //make another HTML just for the comments
+                //make another view to support the beforementioned HTML
+                //make sure the view is built with $(selector).append rather than $(selector).html(output)
+                //OR you can just rush it and build it on top of question-view... as I've done now....
+                window.location = '#/view-post/' + postId;
+            }, function(error) {
+                console.log(error.responseText);
             })
     };
 

@@ -31,6 +31,15 @@ app.forumDataModel = (function() {
         return deffer.promise;
     };
 
+    ForumDataModel.prototype.addComment = function(data) {
+        var deffer = Q.defer();
+        var headers = this._headers.getHeaders();
+
+        deffer.resolve(this._requester.post('https://api.parse.com/1/classes/Answer/', headers, data));
+
+        return deffer.promise;
+    };
+
     return {
         load: function(baseUrl, requester, headers, serviceClass) {
             return new ForumDataModel(baseUrl, requester, headers, serviceClass);
