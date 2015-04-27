@@ -34,8 +34,21 @@ app.validator = (function() {
                 }
 
                 break;
+            case 'equalTo':
+                if (ruleValue === ruleData) {
+                    return true;
+                }
+
+                break;
+            case 'email':
+                var emailRegex = /^([\w-]+(?:\.[\w-]+)*)@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$/i;
+                if (emailRegex.test(ruleData)) {
+                    return true;
+                }
+
+                break;
             default:
-                throw new Error('Unknown validation rule!');
+                throw new Error('Unknown validation rule(' + ruleKey + ')!');
         }
 
         return false;
@@ -65,13 +78,15 @@ app.validator = (function() {
                 var ruleValidationResult = validateRule(ruleKey, ruleValue, ruleData);
 
                 if (!ruleValidationResult) {
-                    var errorMessage = _this._errorMessages[rulesJSONKey][ruleKey];
+                    var errorMessage = {
+                        'message' : _this._errorMessages[rulesJSONKey][ruleKey]
+                    };
 
-                    if (errorMessage === undefined) {
+                    if (errorMessage.message === undefined) {
                         throw new Error('Validation rule has no error message!');
                     }
 
-                    _this._errors.push(_this._errorMessages[rulesJSONKey][ruleKey]);
+                    _this._errors.push(errorMessage);
 
                     return false;
                 }
@@ -97,11 +112,11 @@ app.validator = (function() {
         return this;
     };
 
-    // returns array containing all error messages
+    // returns object containing all error messages
     Validator.prototype.getErrorMessages = function() {
-        return this._errors;
-
-        return this;
+        return {
+            'errorMessages' : this._errors
+        };
     };
 
     return {

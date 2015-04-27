@@ -7,6 +7,7 @@ app.questionController = (function() {
 
     Controller.prototype.loadQuestions = function(selector) {
         var _this = this;
+
         this._model.getHomeView()
             .then(function(questionsData) {
                 var outputData = {
@@ -20,12 +21,10 @@ app.questionController = (function() {
                     outputData.questions[questionIndex]['categoryName'] = outputData.questions[questionIndex]['categoryId']['categoryName'];
                 }
 
-                console.log(outputData);
-
                 app.homeView.render(_this, selector, outputData);
             }, function(error) {
                 console.log(error.responseText);
-            })
+            });
     };
 
     Controller.prototype.addQuestion = function(selector, questionData) {

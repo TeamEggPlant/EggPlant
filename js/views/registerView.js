@@ -1,9 +1,9 @@
 var app = app || {};
 
 app.registerView = (function() {
-    function render(controller, selector) {
+    function render(controller, selector, data) {
         $.get('templates/register.html', function(template) {
-            var output = Mustache.render(template);
+            var output = Mustache.render(template, data);
 
             $(selector).html(output);
         })
@@ -14,15 +14,14 @@ app.registerView = (function() {
                     var registerRepeatPassword = $('#register-repeat-password').val();
                     var registerEmail = $('#register-email').val();
 
-                    // TODO: register controller functionality
-                    //controller.register('#wrapper', registerUsername, registerPassword, registerRepeatPassword, registerEmail);
+                    controller.register('#wrapper', registerUsername, registerPassword, registerRepeatPassword, registerEmail);
                 })
             });
     }
 
     return {
-        render: function(controller, selector) {
-            return render(controller, selector);
+        render: function(controller, selector, data) {
+            return render(controller, selector, data);
         }
     }
 }());

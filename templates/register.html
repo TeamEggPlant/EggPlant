@@ -8,36 +8,39 @@
         </div>
         <div class="panel-body">
             <div id="register-form" class="form-horizontal" role="form">
-                <div id="signupalert" style="display:none" class="alert alert-danger">
-                    <p>Error:</p>
-                    <span></span>
+                {{#errorMessages.length}}
+                <div id="signupalert" class="alert alert-danger">
+                    {{#errorMessages}}
+                        <p class="form-error-message">{{message}}</p>
+                    {{/errorMessages}}
                 </div>
+                {{/errorMessages.length}}
 
                 <div class="form-group">
                     <label for="register-username" class="col-md-3 control-label">Username</label>
                     <div class="col-md-9">
-                        <input type="text" id="register-username" class="form-control" name="username" placeholder="Username...">
+                        <input type="text" id="register-username" class="form-control" name="register-username" value="{{username}}" placeholder="Username...">
                     </div>
                 </div>
 
                 <div class="form-group">
                     <label for="register-password" class="col-md-3 control-label">Password</label>
                     <div class="col-md-9">
-                        <input type="text" id="register-password" class="form-control" name="password" placeholder="Password...">
+                        <input type="password" id="register-password" class="form-control" name="register-password" value="{{password}}" placeholder="Password...">
                     </div>
                 </div>
 
                 <div class="form-group">
-                    <label for="register-repeat-password" class="col-md-3 control-label">Password</label>
+                    <label for="register-repeat-password" class="col-md-3 control-label">Password confirm</label>
                     <div class="col-md-9">
-                        <input type="text" id="register-repeat-password" class="form-control" name="password" placeholder="Password...">
+                        <input type="password" id="register-repeat-password" class="form-control" name="register-password" value="{{repeatPassword}}" placeholder="Password confrim...">
                     </div>
                 </div>
 
                 <div class="form-group">
                     <label for="register-email" class="col-md-3 control-label">Email</label>
                     <div class="col-md-9">
-                        <input type="text" id="register-email" class="form-control" name="email" placeholder="Email Address">
+                        <input type="text" id="register-email" class="form-control" name="register-email" value="{{email}}" placeholder="Email Address">
                     </div>
                 </div>
 
