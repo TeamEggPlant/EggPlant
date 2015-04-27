@@ -10,7 +10,7 @@ var app = app || {};
 	var questionModel = app.forumDataModel.load(apiURL, requester, headers, 'Question/');
 	var authModel = app.forumAuthModel.load(apiURL, requester, headers);
 	var questionController = app.questionController.load(questionModel);
-	var loginController = app.loginController.load(authModel);
+	var authController = app.authController.load(authModel);
 
     app.router = Sammy(function () {
         var selector = '#wrapper';
@@ -18,11 +18,6 @@ var app = app || {};
         this.get('#/', function () {
             questionController.loadQuestions(selector);
             app.setActivePage('home-page');
-        });
-
-        this.get('#/login', function () {
-            loginController.loadLoginPage(selector);
-            app.setActivePage('login-page');
         });
 
         this.get('#/post', function() {
@@ -33,6 +28,16 @@ var app = app || {};
             var postId = this.params['id'];
 
             questionController.loadQuestion('#wrapper', postId);
+        });
+
+        this.get('#/login', function () {
+            authController.loadLoginPage(selector);
+            app.setActivePage('login-page');
+        });
+
+        this.get('#/register', function () {
+            authController.loadRegisterPage(selector);
+            app.setActivePage('register-page');
         });
 
     //
