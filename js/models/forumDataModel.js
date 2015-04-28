@@ -5,7 +5,7 @@ app.forumDataModel = (function() {
         this._requester = requester;
         this._headers = headers;
         this._serviceUrl = baseUrl + 'classes/' + serviceClass;
-        this._baseUrl = baseUrl + 'classes/';
+        this._baseUrl = baseUrl;
     }
 
     ForumDataModel.prototype.getHomeView = function() {
@@ -27,7 +27,25 @@ app.forumDataModel = (function() {
         var deffer = Q.defer();
         var headers = this._headers.getHeaders();
 
-        deffer.resolve(this._requester.get(this._baseUrl + 'Answer/?where={"questionId":{"$inQuery":{"where":{"objectId":"' + questionId + '"},"className":"Question"}}}&include=creator&order=-createdAt', headers));
+        deffer.resolve(this._requester.get(this._baseUrl  + 'classes/Answer/?where={"questionId":{"$inQuery":{"where":{"objectId":"' + questionId + '"},"className":"Question"}}}&include=creator&order=-createdAt', headers));
+
+        return deffer.promise;
+    };
+
+    ForumDataModel.prototype.getAllTags = function() {
+        var deffer = Q.defer();
+        var headers = this._headers.getHeaders();
+
+        deffer.resolve(this._requester.get(this._baseUrl  + 'classes/Tag', headers));
+
+        return deffer.promise;
+    };
+
+    ForumDataModel.prototype.getQuestionTags = function(questionId) {
+        var deffer = Q.defer();
+        var headers = this._headers.getHeaders();
+
+        deffer.resolve(this._requester.get(this._baseUrl  + 'classes/Tag/?where={"questionId":{"$inQuery":{"where":{"objectId":"' + questionId + '"},"className":"Question"}}}', headers));
 
         return deffer.promise;
     };
@@ -42,12 +60,10 @@ app.forumDataModel = (function() {
     };
 
     ForumDataModel.prototype.addQuestionTags = function(data) {
-        // TODO: add multiple tags in DB
-
         var deffer = Q.defer();
         var headers = this._headers.getHeaders();
 
-        deffer.resolve(console.log(data));
+        deffer.resolve(this._requester.post(this._baseUrl + 'functions/addQuestionTags/', headers, data));
 
         return deffer.promise;
     };
@@ -65,7 +81,7 @@ app.forumDataModel = (function() {
         var deffer = Q.defer();
         var headers = this._headers.getHeaders();
 
-        deffer.resolve(this._requester.post('https://api.parse.com/1/classes/Answer/', headers, data));
+        deffer.resolve(this._requester.post(this._baseUrl + 'classes/Answer/', headers, data));
 
         return deffer.promise;
     };

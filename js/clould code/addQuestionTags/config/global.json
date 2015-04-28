@@ -1,0 +1,14 @@
+{
+  "global": {
+    "parseVersion": "1.4.2"
+  },
+  "applications": {
+    "SoftUni Blog": {
+      "applicationId": "hApEEqQtk4HmOcjdrqSbnZb3QyjBlAgk9my5J6uB",
+      "masterKey": "F8S9DUGLlP85I6HTecwoFW7HRnJr0OYizNTsFGCJ"
+    },
+    "_default": {
+      "link": "SoftUni Blog"
+    }
+  }
+}

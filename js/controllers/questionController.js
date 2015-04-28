@@ -10,18 +10,33 @@ app.questionController = (function() {
 
         this._model.getHomeView()
             .then(function(questionsData) {
-                var outputData = {
-                    questions : questionsData.results
-                };
+                _this._model.getAllTags()
+                    .then(function(tagsData) {
+                        tagsData = tagsData.results;
 
-                for (var questionIndex in outputData.questions) {
-                    outputData.questions[questionIndex]['authorId'] = outputData.questions[questionIndex]['creator']['objectId'];
-                    outputData.questions[questionIndex]['authorName'] = outputData.questions[questionIndex]['creator']['username'];
-                    outputData.questions[questionIndex]['category'] = outputData.questions[questionIndex]['categoryId']['objectId'];
-                    outputData.questions[questionIndex]['categoryName'] = outputData.questions[questionIndex]['categoryId']['categoryName'];
-                }
+                        var outputData = {
+                            questions : questionsData.results
+                        };
 
-                app.homeView.render(_this, selector, outputData);
+                        for (var questionIndex in outputData.questions) {
+                            outputData.questions[questionIndex]['authorId'] = outputData.questions[questionIndex]['creator']['objectId'];
+                            outputData.questions[questionIndex]['authorName'] = outputData.questions[questionIndex]['creator']['username'];
+                            outputData.questions[questionIndex]['category'] = outputData.questions[questionIndex]['categoryId']['objectId'];
+                            outputData.questions[questionIndex]['categoryName'] = outputData.questions[questionIndex]['categoryId']['categoryName'];
+                            outputData.questions[questionIndex]['tags'] = '';
+
+                            var currentTags = tagsData.filter(function(obj) {
+                                if (obj.questionId.objectId === outputData.questions[questionIndex].objectId) {
+                                    outputData.questions[questionIndex]['tags'] += obj.name + ', ';
+                                }
+                            });
+                            outputData.questions[questionIndex]['tags'] = outputData.questions[questionIndex]['tags'].substring(0, outputData.questions[questionIndex]['tags'].length - 2);
+                        }
+
+                        app.homeView.render(_this, selector, outputData);
+                    }, function(error) {
+                        console.log(error.responseText);
+                    });
             }, function(error) {
                 console.log(error.responseText);
             });
@@ -72,25 +87,6 @@ app.questionController = (function() {
 
         var validQuestion = questionValidator.isValid();
         if (validQuestion) {
-            /*this._model.loginUser(username, password)
-                .then(function(data) {
-                    sessionStorage['logged-in'] = data.sessionToken;
-                    sessionStorage['username'] = username;
-                    sessionStorage['userId'] = data.objectId;
-
-                    window.location = '#/';
-                }, function(error) {
-                    var outputData = {
-                        'errorMessages' : [
-                            { 'message' : error.responseJSON.error }
-                        ],
-                        'username' : username,
-                        'password' : password
-                    };
-
-                    app.loginView.render(_this, selector, outputData);
-                }
-            );*/
             var questionData = {
                 'title': title,
                 'text': text,
@@ -109,33 +105,28 @@ app.questionController = (function() {
 
             this._model.addQuestion(questionData)
                 .then(function(data) {
-                    // TODO: add these object tags to DB
-
-                    var tagsData = [];
+                    var tagsData = { 'tags' : [] };
                     var splitTags = tags.split(',');
 
                     for (var tagIndex in splitTags) {
                         var currentTag = {
                             'name' : splitTags[tagIndex].trim(),
-                            'questionId' : data.objectId
+                            'questionId': {
+                                '__type': 'Pointer',
+                                'className': 'Question',
+                                'objectId': data.objectId
+                            }
                         };
 
-                        tagsData.push(currentTag);
+                        tagsData.tags.push(currentTag);
                     }
 
                     _this._model.addQuestionTags(tagsData)
-                        .then(function(data) {
-                            console.log(data);
+                        .then(function(tagsData) {
+                            window.location = '#/view-post/' + data.objectId;
                         }, function(error) {
                             console.log(error.responseText);
                         });
-
-                    //console.log(tagsData);
-
-
-                    //var postId = data.objectId;
-
-                    //window.location = '#/view-post/' + postId;
                 }, function(error) {
                     console.log(error.responseText);
                 });
@@ -157,15 +148,23 @@ app.questionController = (function() {
         Q.all([
             this._model.getQuestion(objectId),
             this._model.getQuestionAnswers(objectId),
+            this._model.getQuestionTags(objectId),
             this._model.incrementQuestionViews(objectId, incrementData)
         ]).then(function(questionData){
             var question = questionData[0];
             var questionAnswersData = questionData[1].results;
+            var questionTagsData = questionData[2].results;
+            var questionTags = '';
 
             for (var answerIndex in questionAnswersData) {
                 questionAnswersData[answerIndex]['authorUsername'] = questionAnswersData[answerIndex]['creator']['username'];
                 questionAnswersData[answerIndex]['authorUserId'] = questionAnswersData[answerIndex]['creator']['objectId'];
             }
+
+            for (var tagIndex in questionTagsData) {
+                questionTags += questionTagsData[tagIndex]['name'] + ', ';
+            }
+            questionTags = questionTags.substring(0, questionTags.length - 2);
 
             var outputData = {
                 objectId : question['objectId'],
@@ -177,7 +176,8 @@ app.questionController = (function() {
                 authorName : question['creator']['username'],
                 createdAt : question['createdAt'],
                 answers : questionAnswersData,
-                views : question['views']
+                tags: questionTags,
+                views : questionData[3].views
             };
 
             app.questionView.render(_this, selector, outputData);
@@ -219,6 +219,7 @@ app.questionController = (function() {
                         createdAt : data.createdAt
                     };
 
+                    // TODO: remove bugs when comment is valid
                     app.newAnswerView.render('#answers-holder', outputData);
                 }, function(error) {
                     console.log(error.responseText);
