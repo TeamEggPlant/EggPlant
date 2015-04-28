@@ -1,16 +1,24 @@
-<div id="loginbox" style="margin-top:50px;" class="mainbox col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2">
+<div id="questionbox" style="margin-top:50px;" class="mainbox col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2">
     <div class="panel panel-info">
         <div class="panel-heading">
             <div class="panel-title">Ask a Question</div>
         </div>
-        <div style="padding-top:30px" class="panel-body">
+        <div style="padding-top:20px" class="panel-body">
 
             <div id="post-question-form" class="form-horizontal" role="form">
-                <div style="margin-bottom: 25px" class="input-group">
+                {{#errorMessages.length}}
+                <div id="signupalert" class="alert alert-danger">
+                    {{#errorMessages}}
+                    <p class="form-error-message">{{message}}</p>
+                    {{/errorMessages}}
+                </div>
+                {{/errorMessages.length}}
+
+                <div style="margin-bottom: 15px" class="input-group">
                     <span class="input-group-addon">
                         <i class="glyphicon  glyphicon-bookmark"></i>
                     </span>
-                    <input id="question-title" type="text" class="form-control" name="title" placeholder="Title...">
+                    <input id="question-title" type="text" class="form-control" name="title" value="{{title}}" placeholder="Title...">
                 </div>
 
                 <span>Select Category</span>
@@ -21,9 +29,15 @@
                     <option name="javascript" value="p9mYEurTgl">JavaScript</option>
                 </select>
 
-                <div style="margin-bottom: 25px" class="form-group">
+                <div style="margin-bottom: 0; padding: 15px;" class="form-group">
                     <label for="question">Your Question:</label>
-                    <textarea class="form-control" rows="5" id="question" name="question"></textarea>
+                    <textarea class="form-control" rows="5" id="question" name="question">{{text}}</textarea>
+                </div>
+                <div style="margin-bottom: 25px" class="input-group">
+                    <span class="input-group-addon">
+                        <i class="glyphicon  glyphicon-bookmark"></i>
+                    </span>
+                    <input id="question-tags" type="text" class="form-control" name="tags" value="{{tags}}" placeholder="Tags, split with comma(,)...">
                 </div>
 
                 <div style="margin-top:10px" class="form-group">

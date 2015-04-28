@@ -11,7 +11,8 @@ app.forumAuthModel = (function() {
         var deffer = Q.defer();
         var headers = this._headers.getHeaders();
 
-        deffer.resolve(this._requester.login(this._serviceUrl + 'login', headers, username, password));
+        var loginParameters = '?username=' + username + '&password=' + password;
+        deffer.resolve(this._requester.get(this._serviceUrl + 'login' + loginParameters, headers, username, password));
 
         return deffer.promise;
     };
@@ -20,7 +21,7 @@ app.forumAuthModel = (function() {
         var deffer = Q.defer();
         var headers = this._headers.getHeaders();
 
-        deffer.resolve(this._requester.register(this._serviceUrl + 'users', headers, userData));
+        deffer.resolve(this._requester.post(this._serviceUrl + 'users', headers, userData));
 
         return deffer.promise;
     };

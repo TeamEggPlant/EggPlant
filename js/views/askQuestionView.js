@@ -1,38 +1,27 @@
 var app = app || {};
 
 app.askQuestionView = (function() {
-    function render(controller, selector) {
+    function render(controller, selector, data) {
         $.get('templates/ask-question.html', function(template) {
-            var output = Mustache.render(template);
+            var output = Mustache.render(template, data);
 
             $(selector).html(output);
         })
             .then(function() {
                 $('#ask').click(function() {
-                    var questionCategoryId = $('#question-category :selected').val();
-                    var questionData = {
-                        title: $('#question-title').val(),
-                        text: $('#question').val(),
-                        categoryId: {
-                            '__type': 'Pointer',
-                            'className': 'Category',
-                            'objectId': questionCategoryId
-                        },
-                        creator: {
-                            '__type': 'Pointer',
-                            'className': '_User',
-                            'objectId': sessionStorage['userId']
-                        }
-                    };
+                    var title = $('#question-title').val();
+                    var text = $('#question').val();
+                    var tags = $('#question-tags').val();
+                    var categoryId = $('#question-category :selected').val();
 
-                    controller.addQuestion('#wrapper', questionData);
+                    controller.addQuestion('#wrapper', title, text, tags, categoryId);
                 })
             });
     }
 
     return {
-        render: function(controller, selector) {
-            return render(controller, selector);
+        render: function(controller, selector, data) {
+            return render(controller, selector, data);
         }
     }
 }());

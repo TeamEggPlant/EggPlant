@@ -41,6 +41,26 @@ app.forumDataModel = (function() {
         return deffer.promise;
     };
 
+    ForumDataModel.prototype.addQuestionTags = function(data) {
+        // TODO: add multiple tags in DB
+
+        var deffer = Q.defer();
+        var headers = this._headers.getHeaders();
+
+        deffer.resolve(console.log(data));
+
+        return deffer.promise;
+    };
+
+    ForumDataModel.prototype.incrementQuestionViews = function(objectId, data) {
+        var deffer = Q.defer();
+        var headers = this._headers.getHeaders();
+
+        deffer.resolve(this._requester.put(this._serviceUrl + objectId, headers, data));
+
+        return deffer.promise;
+    };
+
     ForumDataModel.prototype.addComment = function(data) {
         var deffer = Q.defer();
         var headers = this._headers.getHeaders();

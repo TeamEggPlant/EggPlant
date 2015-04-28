@@ -12,13 +12,8 @@ app.requester = (function() {
         return makeRequest('POST', headers, url, data);
     };
 
-    Requester.prototype.login = function (url, headers, username, password) {
-        var userData = '?username=' + username + '&password=' + password;
-        return makeRequest('GET', headers, url + userData);
-    };
-
-    Requester.prototype.register = function (url, headers, data) {
-        return makeRequest('POST', headers, url, data);
+    Requester.prototype.put = function (url, headers, data) {
+        return makeRequest('PUT', headers, url, data);
     };
 
     function makeRequest(method, headers, url, data) {
