@@ -5,6 +5,42 @@ app.questionController = (function() {
         this._model = model;
     }
 
+    Controller.prototype.loadAskQuestionPage = function(selector) {
+        var _this = this;
+
+        this._model.getAllCategories()
+            .then(function (categoriesData) {
+                var categories = { 'categories': categoriesData.results };
+
+                app.askQuestionView.render(_this, selector, categories);
+            }, function (error) {
+                console.log(error.responseText);
+            });
+    };
+
+    Controller.prototype.loadQuestion = function(selector, objectId) {
+        var _this = this;
+        var incrementData = { 'views' : { '__op' : 'Increment', 'amount' : 1 } };
+
+        Q.all([
+            this._model.getQuestion(objectId),
+            this._model.getQuestionAnswers(objectId),
+            this._model.getQuestionTags(objectId),
+            this._model.incrementQuestionViews(objectId, incrementData)
+        ]).then(function(data){
+                var questionData = data[0];
+                var questionAnswersData = data[1].results;
+                var questionTagsData = data[2].results;
+                var questionViewsData = data[3];
+                var outputData = _this._model.formatQuestion(questionData, questionAnswersData, questionTagsData, questionViewsData);
+
+                app.questionView.render(_this, selector, outputData);
+            },
+            function(error) {
+                console.log(error);
+            });
+    };
+
     Controller.prototype.loadQuestions = function(selector, options) {
         var _this = this;
 
@@ -16,9 +52,31 @@ app.questionController = (function() {
             var questionsData = data[0].results;
             var categoriesData = data[1].results;
             var tagsData = data[2].results;
+            var outputData = _this._model.formatQuestions(questionsData, categoriesData, tagsData);
+
+            app.homeView.render(_this, selector, outputData);
+        }, function(error) {
+            console.log(error);
+        });
+    };
+
+    Controller.prototype.loadSearchQuestions = function(selector, searchValue) {
+        var _this = this;
+
+        Q.all([
+            this._model.getAllQuestions(),
+            this._model.getAllCategories(),
+            this._model.getAllAnswers(),
+            this._model.getAllTags(),
+        ]).then(function(data) {
+            var questionsData = data[0].results;
+            var categoriesData = data[1].results;
+            var answersData = data[2].results;
+            var tagsData = data[3].results;
+            var matchedQuestions = _this._model.extractMatchedQuestions(questionsData, answersData, tagsData, searchValue);
 
             var outputData = {
-                questions : questionsData,
+                questions : matchedQuestions,
                 categories : categoriesData,
                 tags : _this._model.formatTags(tagsData)
             };
@@ -158,65 +216,6 @@ app.questionController = (function() {
         }
     };
 
-    Controller.prototype.loadAskQuestionPage = function(selector) {
-        var _this = this;
-
-        this._model.getAllCategories()
-            .then(function (categoriesData) {
-                var categories = {'categories': categoriesData.results};
-
-                app.askQuestionView.render(_this, selector, categories);
-            }, function (error) {
-                console.log(error.responseText);
-            });
-    };
-
-    Controller.prototype.loadQuestion = function(selector, objectId) {
-        var _this = this;
-        var incrementData = { 'views' : { '__op' : 'Increment', 'amount' : 1 } };
-
-        Q.all([
-            this._model.getQuestion(objectId),
-            this._model.getQuestionAnswers(objectId),
-            this._model.getQuestionTags(objectId),
-            this._model.incrementQuestionViews(objectId, incrementData)
-        ]).then(function(questionData){
-            var question = questionData[0];
-            var questionAnswersData = questionData[1].results;
-            var questionTagsData = questionData[2].results;
-            var questionTags = '';
-
-            for (var answerIndex in questionAnswersData) {
-                questionAnswersData[answerIndex]['authorUsername'] = questionAnswersData[answerIndex]['creator']['username'];
-                questionAnswersData[answerIndex]['authorUserId'] = questionAnswersData[answerIndex]['creator']['objectId'];
-            }
-
-            for (var tagIndex in questionTagsData) {
-                questionTags += questionTagsData[tagIndex]['name'] + ', ';
-            }
-            questionTags = questionTags.substring(0, questionTags.length - 2);
-
-            var outputData = {
-                objectId : question['objectId'],
-                title : question['title'],
-                text : question['text'],
-                categoryId : question['categoryId']['objectId'],
-                categoryName : question['categoryId']['categoryName'],
-                authorId : question['creator']['objectId'],
-                authorName : question['creator']['username'],
-                createdAt : question['createdAt'],
-                answers : questionAnswersData,
-                tags: questionTags,
-                views : questionData[3].views
-            };
-
-            app.questionView.render(_this, selector, outputData);
-        },
-        function(error) {
-            console.log(error);
-        });
-    };
-
     Controller.prototype.addComment = function(selector, commentData) {
         var _this = this;
 
@@ -227,7 +226,7 @@ app.questionController = (function() {
                         'message' : 'Please login in order to comment!'
                     }
                 ]
-            }
+            };
             outputData.answer = commentData.answerBody;
             outputData.error = 'Please login in order to comment!';
 

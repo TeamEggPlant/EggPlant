@@ -22,22 +22,10 @@ app.forumDataModel = (function() {
         return this._requester.get(this._serviceUrl + urlOptions, headers);
     };
 
-    ForumDataModel.prototype.getQuestion = function(questionId) {
-        var deffer = Q.defer();
+    ForumDataModel.prototype.getAllAnswers = function() {
         var headers = this._headers.getHeaders();
 
-        deffer.resolve(this._requester.get(this._serviceUrl + questionId + '?include=categoryId,creator', headers));
-
-        return deffer.promise;
-    };
-
-    ForumDataModel.prototype.getQuestionAnswers = function(questionId) {
-        var deffer = Q.defer();
-        var headers = this._headers.getHeaders();
-
-        deffer.resolve(this._requester.get(this._baseUrl  + 'classes/Answer/?where={"questionId":{"$inQuery":{"where":{"objectId":"' + questionId + '"},"className":"Question"}}}&include=creator&order=-createdAt', headers));
-
-        return deffer.promise;
+        return this._requester.get(this._baseUrl + 'classes/Answer?include=questionId,questionId.categoryId,questionId.creator,creator', headers);
     };
 
     ForumDataModel.prototype.getAllCategories = function() {
@@ -53,7 +41,25 @@ app.forumDataModel = (function() {
         var deffer = Q.defer();
         var headers = this._headers.getHeaders();
 
-        deffer.resolve(this._requester.get(this._baseUrl  + 'classes/Tag', headers));
+        deffer.resolve(this._requester.get(this._baseUrl  + 'classes/Tag?include=questionId,questionId.categoryId,questionId.creator', headers));
+
+        return deffer.promise;
+    };
+
+    ForumDataModel.prototype.getQuestion = function(questionId) {
+        var deffer = Q.defer();
+        var headers = this._headers.getHeaders();
+
+        deffer.resolve(this._requester.get(this._serviceUrl + questionId + '?include=categoryId,creator', headers));
+
+        return deffer.promise;
+    };
+
+    ForumDataModel.prototype.getQuestionAnswers = function(questionId) {
+        var deffer = Q.defer();
+        var headers = this._headers.getHeaders();
+
+        deffer.resolve(this._requester.get(this._baseUrl  + 'classes/Answer/?where={"questionId":{"$inQuery":{"where":{"objectId":"' + questionId + '"},"className":"Question"}}}&include=creator&order=-createdAt', headers));
 
         return deffer.promise;
     };
@@ -103,23 +109,58 @@ app.forumDataModel = (function() {
         return deffer.promise;
     };
 
-    ForumDataModel.prototype.formatQuestions = function(data, tagsData) {
-        for (var questionIndex in data.questions) {
-            data.questions[questionIndex]['authorId'] = data.questions[questionIndex]['creator']['objectId'];
-            data.questions[questionIndex]['authorName'] = data.questions[questionIndex]['creator']['username'];
-            data.questions[questionIndex]['category'] = data.questions[questionIndex]['categoryId']['objectId'];
-            data.questions[questionIndex]['categoryName'] = data.questions[questionIndex]['categoryId']['categoryName'];
-            data.questions[questionIndex]['tags'] = '';
-
-            var currentTags = tagsData.filter(function(obj) {
-                if (obj.questionId.objectId === data.questions[questionIndex].objectId) {
-                    data.questions[questionIndex]['tags'] += obj.name + ', ';
-                }
-            });
-            data.questions[questionIndex]['tags'] = data.questions[questionIndex]['tags'].substring(0, data.questions[questionIndex]['tags'].length - 2);
+    ForumDataModel.prototype.formatQuestion = function(questionData, questionAnswersData, questionTagsData, questionViewsData) {
+        // add answers to question
+        for (var answerIndex in questionAnswersData) {
+            questionAnswersData[answerIndex]['authorUsername'] = questionAnswersData[answerIndex]['creator']['username'];
+            questionAnswersData[answerIndex]['authorUserId'] = questionAnswersData[answerIndex]['creator']['objectId'];
         }
 
-        return data;
+        // add tags to question
+
+        var questionTags = '';
+        for (var tagIndex in questionTagsData) {
+            questionTags += questionTagsData[tagIndex]['name'] + ', ';
+        }
+        questionTags = questionTags.substring(0, questionTags.length - 2);
+
+        // format question output
+        return {
+            objectId : questionData['objectId'],
+            title : questionData['title'],
+            text : questionData['text'],
+            categoryId : questionData['categoryId']['objectId'],
+            categoryName : questionData['categoryId']['categoryName'],
+            authorId : questionData['creator']['objectId'],
+            authorName : questionData['creator']['username'],
+            createdAt : questionData['createdAt'],
+            answers : questionAnswersData,
+            tags: questionTags,
+            views : questionViewsData.views
+        };
+    }
+
+    ForumDataModel.prototype.formatQuestions = function(questionsData, categoriesData, tagsData) {
+        for (var questionIndex in questionsData) {
+            questionsData[questionIndex]['authorId'] = questionsData[questionIndex]['creator']['objectId'];
+            questionsData[questionIndex]['authorName'] = questionsData[questionIndex]['creator']['username'];
+            questionsData[questionIndex]['category'] = questionsData[questionIndex]['categoryId']['objectId'];
+            questionsData[questionIndex]['categoryName'] = questionsData[questionIndex]['categoryId']['categoryName'];
+            questionsData[questionIndex]['tags'] = '';
+
+            tagsData.filter(function(obj) {
+                if (obj.questionId.objectId === questionsData[questionIndex].objectId) {
+                    questionsData[questionIndex]['tags'] += obj.name + ', ';
+                }
+            });
+            questionsData[questionIndex]['tags'] = questionsData[questionIndex]['tags'].substring(0, questionsData[questionIndex]['tags'].length - 2);
+        }
+
+        return {
+            questions : questionsData,
+            categories : categoriesData,
+            tags : ForumDataModel.prototype.formatTags(tagsData)
+        };
     }
 
     ForumDataModel.prototype.formatTags = function(data) {
@@ -151,6 +192,94 @@ app.forumDataModel = (function() {
         }
 
         return tags;
+    }
+
+    ForumDataModel.prototype.extractMatchedQuestions = function(questionsData, answersData, tagsData, searchValue) {
+        var matchedQuestionsIds = {};
+        var matchedQuestions = [];
+        var searchPattern = new RegExp(searchValue, "g");
+
+        // extract matches from questions
+        for (var questionIndex in questionsData) {
+            var currentQuestion = questionsData[questionIndex];
+            var questionMatches = searchPattern.test(currentQuestion.title) || searchPattern.test(currentQuestion.text);
+
+            if (questionMatches && matchedQuestionsIds[currentQuestion.objectId] === undefined) {
+                matchedQuestions.push(currentQuestion);
+                matchedQuestionsIds[currentQuestion.objectId] = true;
+            }
+        }
+
+        // extract matches from answers
+        for (var answerIndex in answersData) {
+            var currentAnswer = answersData[answerIndex];
+            var answerMatches = searchPattern.test(currentAnswer.answerBody);
+
+            if (answerMatches && matchedQuestionsIds[currentAnswer.questionId.objectId] === undefined) {
+                matchedQuestions.push(currentAnswer.questionId);
+                matchedQuestionsIds[currentAnswer.questionId.objectId] = true;
+            }
+        }
+
+        // extract matches from tags
+        for (var tagIndex in tagsData) {
+            var currentTag = tagsData[tagIndex];
+            var tagMatches = searchPattern.test(currentTag.name);
+
+            if (tagMatches && matchedQuestionsIds[currentTag.questionId.objectId] === undefined) {
+                matchedQuestions.push(currentTag.questionId);
+                matchedQuestionsIds[currentTag.questionId.objectId] = true;
+            }
+        }
+
+        return matchedQuestions;
+    }
+
+    ForumDataModel.prototype.extractUsersRanking = function(questionsData, answersData) {
+        var users = {};
+
+        // extract users questions
+        for (var questionIndex in questionsData) {
+            var currentQuestion = questionsData[questionIndex];
+            var currentQuestionCreatorId = currentQuestion.creator.objectId;
+            var currentQuestionCreatorUsername = currentQuestion.creator.username;
+
+            if (users[currentQuestionCreatorId] === undefined) {
+                users[currentQuestionCreatorId] = {
+                    'userId' : currentQuestionCreatorId,
+                    'username' : currentQuestionCreatorUsername,
+                    'questions' : 1
+                }
+            }
+            else {
+                users[currentQuestionCreatorId]['questions'] += 3;
+            }
+        }
+
+        // extract users answers
+        for (var answerIndex in answersData) {
+            var currentAnswer = answersData[answerIndex];
+            var currentAnswerCreatorId = currentAnswer.creator.objectId;
+            var currentAnswerCreatorUsername = currentAnswer.creator.username;
+
+            if (users[currentAnswerCreatorId] === undefined) {
+                users[currentAnswerCreatorId] = {
+                    'userId' : currentAnswerCreatorId,
+                    'username' : currentAnswerCreatorUsername,
+                    'questions' : 1
+                }
+            }
+            else {
+                users[currentAnswerCreatorId]['questions']++;
+            }
+        }
+
+        users = Object.keys(users).map(function (key) { return users[key]; });
+        users = users.sort(function(a, b) { return b.questions - a.questions; });
+
+        return {
+            'users' : users
+        };
     }
 
     return {

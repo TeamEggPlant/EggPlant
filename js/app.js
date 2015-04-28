@@ -9,11 +9,13 @@ var app = app || {};
 	var requester = app.requester.load();
     var cookies = app.cookies.load();
 
-	var questionModel = app.forumDataModel.load(apiURL, requester, headers, 'Question/');
+	var dataModel = app.forumDataModel.load(apiURL, requester, headers, 'Question/');
 	var authModel = app.forumAuthModel.load(apiURL, requester, headers);
+	var rankingModel = app.forumAuthModel.load(apiURL, requester, headers);
 
-	var questionController = app.questionController.load(questionModel);
+	var questionController = app.questionController.load(dataModel);
 	var authController = app.authController.load(authModel, cookies);
+    var rankingController = app.rankingController.load(dataModel);
 	var navigationController = app.navigationController.load(null);
 
     app.router = Sammy(function () {
@@ -52,7 +54,6 @@ var app = app || {};
             authController.loadLoginPage(selector);
         });
 
-
         this.get('#/logout', function () {
             authController.logout();
         });
@@ -64,9 +65,15 @@ var app = app || {};
         });
 
         this.get('#/ask-question', function() {
-            app.loadNavigationMenu('home-page');
+            app.loadNavigationMenu('ask-question-page');
 
             questionController.loadAskQuestionPage(selector);
+        });
+
+        this.get('#/ranking', function() {
+            app.loadNavigationMenu('ranking-page');
+
+            rankingController.loadRankingPage(selector);
         });
 
         this.notFound = function() {

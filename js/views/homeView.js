@@ -10,8 +10,7 @@ app.homeView = (function() {
             $('#search').click(function(e) {
                 var searchValue = $('#search-value').val();
 
-                // TODO: search functionality
-                //controller.search('#wrapper', loginUsername, loginPassword);
+                controller.loadSearchQuestions('#wrapper', searchValue);
                 e.preventDefault();
             })
         });
