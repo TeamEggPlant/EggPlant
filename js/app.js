@@ -7,58 +7,63 @@ var app = app || {};
 
 	var headers = app.headers.load(apiId, restAPIKey);
 	var requester = app.requester.load();
+
 	var questionModel = app.forumDataModel.load(apiURL, requester, headers, 'Question/');
 	var authModel = app.forumAuthModel.load(apiURL, requester, headers);
+
 	var questionController = app.questionController.load(questionModel);
 	var authController = app.authController.load(authModel);
+	var navigationController = app.navigationController.load(null);
 
     app.router = Sammy(function () {
         var selector = '#wrapper';
 
         this.get('#/', function () {
+            app.loadNavigationMenu('home-page');
+
             questionController.loadQuestions(selector);
-            app.setActivePage('home-page');
         });
 
         this.get('#/post', function() {
+            app.loadNavigationMenu('home-page');
+
             questionController.loadQuestion(selector);
         });
 
         this.get('#/view-post/:id', function() {
-            var postId = this.params['id'];
+            app.loadNavigationMenu('home-page');
 
+            var postId = this.params['id'];
             questionController.loadQuestion('#wrapper', postId);
         });
 
         this.get('#/login', function () {
+            app.loadNavigationMenu('login-page');
+
             authController.loadLoginPage(selector);
-            app.setActivePage('login-page');
+        });
+
+
+        this.get('#/logout', function () {
+            authController.logout();
         });
 
         this.get('#/register', function () {
+            app.loadNavigationMenu('register-page');
+
             authController.loadRegisterPage(selector);
-            app.setActivePage('register-page');
         });
 
         this.get('#/ask-question', function() {
+            app.loadNavigationMenu('home-page');
+
             questionController.loadAskQuestionPage(selector);
-            app.setActivePage('home-page');
         });
     });
 
-    app.setActivePage = function setActivePage(pageId) {
-        $('.nav').find('li').each(function () {
-            $(this).removeClass('active');
-        });
-        $('li#' + pageId).addClass('active');
+    app.loadNavigationMenu = function loadNavigationMenu(activePage) {
+        navigationController.loadNavigationMenu('#forum-menu', activePage);
     };
-
-    function isQuestionValid(data){
-        if(!data.question||!data.title||!data.category){
-            return false;
-        }
-        return true;
-    }
 
     app.router.run('#/');
 }());

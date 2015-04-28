@@ -33,96 +33,16 @@ app.questionController = (function() {
     Controller.prototype.addQuestion = function(selector, title, text, tags, categoryId) {
         var _this = this;
 
-        var questionValidator = app.validator.load();
-        questionValidator.setRules({
-            'title': {
-                required: true,
-                minlength: 4,
-                maxlength: 50
-            },
-            'text': {
-                required: true,
-                minlength: 6
-            },
-            'tags': {
-                required: true,
-                minlength: 2,
-                regex: /^([^\s,_-][a-z0-9\s,_-]+)$/
-            }
-        })
-        .setErrorMessages({
-            'title': {
-                required: 'Please enter title!',
-                minlength: 'Your title must be at least 4 characters long!',
-                maxlength: 'Your title must be less than 50 characters long!'
-            },
-            'text': {
-                required: 'Please enter question!',
-                minlength: 'Your question must be at least 6 characters long!'
-            },
-            'tags': {
-                required: 'Please enter tags!',
-                minlength: 'Your tags must be at least 2 characters long!',
-                regex: 'Your tags can only contain english letters, numbers, slashes(_) and dashes(-)!'
-            }
-        })
-        .setData({
-            'title': title,
-            'text': text,
-            'tags': tags
-        })
-        .validate();
-
-        var validQuestion = questionValidator.isValid();
-        if (validQuestion) {
-            var questionData = {
-                'title': title,
-                'text': text,
-                'views' : 0,
-                'categoryId': {
-                    '__type': 'Pointer',
-                    'className': 'Category',
-                    'objectId': categoryId
-                },
-                'creator': {
-                    '__type': 'Pointer',
-                    'className': '_User',
-                    'objectId': sessionStorage['userId']
-                }
-            };
-
-            this._model.addQuestion(questionData)
-                .then(function(data) {
-                    var tagsData = { 'tags' : [] };
-                    var splitTags = tags.split(',');
-
-                    for (var tagIndex in splitTags) {
-                        var currentTag = {
-                            'name' : splitTags[tagIndex].trim(),
-                            'questionId': {
-                                '__type': 'Pointer',
-                                'className': 'Question',
-                                'objectId': data.objectId
-                            }
-                        };
-
-                        tagsData.tags.push(currentTag);
-                    }
-
-                    _this._model.addQuestionTags(tagsData)
-                        .then(function(tagsData) {
-                            window.location = '#/view-post/' + data.objectId;
-                        }, function(error) {
-                            console.log(error.responseText);
-                        });
-                }, function(error) {
-                    console.log(error.responseText);
-                });
-        }
-        else {
+        if (!sessionStorage['logged-in'] || !sessionStorage['userId'] || !sessionStorage['username']) {
             this._model.getAllCategories()
                 .then(function(categoriesData) {
-                    var outputData = questionValidator.getErrorMessages();
+                    var outputData = {
+                        'errorMessages' : [
+                            {
+                                'message' : 'Please login in order to ask question!'
+                            }
+                        ]
+                    }
                     outputData.title = title;
                     outputData.text = text;
                     outputData.tags = tags;
@@ -133,17 +53,120 @@ app.questionController = (function() {
                     console.log(error.responseText);
                 });
         }
+        else {
+            var questionValidator = app.validator.load();
+            questionValidator.setRules({
+                'title': {
+                    required: true,
+                    minlength: 4,
+                    maxlength: 50
+                },
+                'text': {
+                    required: true,
+                    minlength: 6
+                },
+                'tags': {
+                    required: true,
+                    minlength: 2,
+                    regex: /^([^\s,_-][a-z0-9\s,_-]+)$/
+                }
+            })
+                .setErrorMessages({
+                    'title': {
+                        required: 'Please enter title!',
+                        minlength: 'Your title must be at least 4 characters long!',
+                        maxlength: 'Your title must be less than 50 characters long!'
+                    },
+                    'text': {
+                        required: 'Please enter question!',
+                        minlength: 'Your question must be at least 6 characters long!'
+                    },
+                    'tags': {
+                        required: 'Please enter tags!',
+                        minlength: 'Your tags must be at least 2 characters long!',
+                        regex: 'Your tags can only contain english letters, numbers, slashes(_) and dashes(-)!'
+                    }
+                })
+                .setData({
+                    'title': title,
+                    'text': text,
+                    'tags': tags
+                })
+                .validate();
+
+            var validQuestion = questionValidator.isValid();
+            if (validQuestion) {
+                var questionData = {
+                    'title': title,
+                    'text': text,
+                    'views': 0,
+                    'categoryId': {
+                        '__type': 'Pointer',
+                        'className': 'Category',
+                        'objectId': categoryId
+                    },
+                    'creator': {
+                        '__type': 'Pointer',
+                        'className': '_User',
+                        'objectId': sessionStorage['userId']
+                    }
+                };
+
+                this._model.addQuestion(questionData)
+                    .then(function (data) {
+                        var tagsData = {'tags': []};
+                        var splitTags = tags.split(',');
+
+                        for (var tagIndex in splitTags) {
+                            var currentTag = {
+                                'name': splitTags[tagIndex].trim(),
+                                'questionId': {
+                                    '__type': 'Pointer',
+                                    'className': 'Question',
+                                    'objectId': data.objectId
+                                }
+                            };
+
+                            tagsData.tags.push(currentTag);
+                        }
+
+                        _this._model.addQuestionTags(tagsData)
+                            .then(function (tagsData) {
+                                window.location = '#/view-post/' + data.objectId;
+                            }, function (error) {
+                                console.log(error.responseText);
+                            });
+                    }, function (error) {
+                        console.log(error.responseText);
+                    });
+            }
+            else {
+                this._model.getAllCategories()
+                    .then(function (categoriesData) {
+                        var outputData = questionValidator.getErrorMessages();
+                        outputData.title = title;
+                        outputData.text = text;
+                        outputData.tags = tags;
+                        outputData.categories = categoriesData.results;
+
+                        console.log(outputData);
+                        app.askQuestionView.render(_this, selector, outputData);
+                    }, function (error) {
+                        console.log(error.responseText);
+                    });
+            }
+        }
     };
 
     Controller.prototype.loadAskQuestionPage = function(selector) {
         var _this = this;
 
         this._model.getAllCategories()
-            .then(function(categoriesData) {
-                var categories = { 'categories' : categoriesData.results };
+            .then(function (categoriesData) {
+                var categories = {'categories': categoriesData.results};
 
                 app.askQuestionView.render(_this, selector, categories);
-            }, function(error) {
+            }, function (error) {
                 console.log(error.responseText);
             });
     };
@@ -197,47 +220,63 @@ app.questionController = (function() {
     Controller.prototype.addComment = function(selector, commentData) {
         var _this = this;
 
-        var answerValidator = app.validator.load();
-        answerValidator.setRules({
-            'answer': {
-                required: true,
-                minlength: 4
+        if (!sessionStorage['logged-in'] || !sessionStorage['userId'] || !sessionStorage['username']) {
+            var outputData = {
+                'errorMessages' : [
+                    {
+                        'message' : 'Please login in order to comment!'
+                    }
+                ]
             }
-        })
-        .setErrorMessages({
-            'answer': {
-                required: 'Please enter answer!',
-                minlength: 'Your answer must be at least 4 characters long!'
-            }
-        })
-        .setData({
-            'answer': commentData.answerBody
-        })
-        .validate();
-
-        var validAnswer = answerValidator.isValid();
-        if (validAnswer) {
-            this._model.addComment(commentData)
-                .then(function(data) {
-                    var outputData = {
-                        answerBody : commentData.answerBody,
-                        authorUserId : sessionStorage['userId'],
-                        authorUsername : sessionStorage['username'],
-                        createdAt : data.createdAt
-                    };
-
-                    app.errorView.render('#error-holder', {});
-                    app.newAnswerView.render('#answers-holder', outputData);
-                }, function(error) {
-                    console.log(error.responseText);
-                });
-        }
-        else {
-            var outputData = answerValidator.getErrorMessages();
-            outputData.error = outputData.errorMessages[0].message;
             outputData.answer = commentData.answerBody;
+            outputData.error = 'Please login in order to comment!';
 
             app.errorView.render('#error-holder', outputData);
+        }
+        else {
+            var answerValidator = app.validator.load();
+            answerValidator.setRules({
+                'answer': {
+                    required: true,
+                    minlength: 4
+                }
+            })
+                .setErrorMessages({
+                    'answer': {
+                        required: 'Please enter answer!',
+                        minlength: 'Your answer must be at least 4 characters long!'
+                    }
+                })
+                .setData({
+                    'answer': commentData.answerBody
+                })
+                .validate();
+
+            var validAnswer = answerValidator.isValid();
+            if (validAnswer) {
+                this._model.addComment(commentData)
+                    .then(function(data) {
+                        var outputData = {
+                            answerBody : commentData.answerBody,
+                            authorUserId : sessionStorage['userId'],
+                            authorUsername : sessionStorage['username'],
+                            createdAt : data.createdAt
+                        };
+
+                        app.errorView.render('#error-holder', {});
+                        app.newAnswerView.render('#answers-holder', outputData);
+                    }, function(error) {
+                        console.log(error.responseText);
+                    });
+            }
+            else {
+                var outputData = answerValidator.getErrorMessages();
+                outputData.error = outputData.errorMessages[0].message;
+                outputData.answer = commentData.answerBody;
+                console.log(outputData);
+
+                app.errorView.render('#error-holder', outputData);
+            }
         }
     };
 

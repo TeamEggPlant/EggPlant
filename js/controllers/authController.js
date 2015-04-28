@@ -6,11 +6,21 @@ app.authController = (function() {
     }
 
     Controller.prototype.loadLoginPage = function(selector) {
-        app.loginView.render(this, selector);
+        if (!sessionStorage['logged-in'] || !sessionStorage['userId'] || !sessionStorage['username']) {
+            app.loginView.render(this, selector);
+        }
+        else {
+            window.location = '#/';
+        }
     };
 
     Controller.prototype.loadRegisterPage = function(selector) {
-        app.registerView.render(this, selector);
+        if (!sessionStorage['logged-in'] || !sessionStorage['userId'] || !sessionStorage['username']) {
+            app.registerView.render(this, selector);
+        }
+        else {
+            window.location = '#/';
+        }
     };
 
     Controller.prototype.login = function(selector, username, password) {
@@ -148,8 +158,6 @@ app.authController = (function() {
                     sessionStorage['username'] = username;
                     sessionStorage['userId'] = data.objectId;
 
-                    //app.setActivePage('home-page');
-                    //app.homeView.render(this, selector);
                     window.location = '#/';
                 }, function(error) {
                     var outputData = {
@@ -176,6 +184,11 @@ app.authController = (function() {
             app.registerView.render(this, selector, outputData);
         }
     };
+
+    Controller.prototype.logout = function() {
+        sessionStorage.clear();
+        window.location = '#/';
+    }
 
     return {
         load: function(model) {

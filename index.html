@@ -33,12 +33,14 @@
 	<script type="text/javascript" src="js/views/loginView.js" defer></script>
 	<script type="text/javascript" src="js/views/registerView.js" defer></script>
 	<script type="text/javascript" src="js/views/questionView.js" defer></script>
-	<script type="text/javascript" src="js/views/errorView.js" defer></script>
 	<script type="text/javascript" src="js/views/newAnswerView.js" defer></script>
+	<script type="text/javascript" src="js/views/menuView.js" defer></script>
+	<script type="text/javascript" src="js/views/errorView.js" defer></script>
 
 	<!-- controllers -->
 	<script type="text/javascript" src="js/controllers/questionController.js" defer></script>
 	<script type="text/javascript" src="js/controllers/authController.js" defer></script>
+	<script type="text/javascript" src="js/controllers/navigationController.js" defer></script>
 
 	<!-- app main -->
 	<script type="text/javascript" src="js/app.js" defer></script>
@@ -49,14 +51,7 @@
 			<div class="navbar-header">
 				<a class="navbar-brand" href="#/">Forum</a>
 			</div>
-			<div class="collapse navbar-collapse">
-				<ul class="nav navbar-nav">
-					<li id="home-page"><a href="#/">Home</a></li>
-					<li id="login-page"><a href="#/login" id="login-form-button">Login</a></li>
-					<li id="register-page"><a href="#/register" id="register-form-button">Register</a></li>
-					<li id="about-page"><a href="#/about">About</a></li>
-				</ul>
-			</div>
+			<div class="collapse navbar-collapse" id="forum-menu" data-type=""></div>
 		</div>
 	</div>
 	
@@ -65,7 +60,7 @@
 	<hr />
 
 	<footer>
-		<p>Team Eggplant teamwork project 2015</p>
+		<p style="text-align: center;">Team EggPlant JS apps teamwork project</p>
 	</footer>
 </body>
 </html>
