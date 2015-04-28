@@ -8,38 +8,26 @@ app.questionController = (function() {
     Controller.prototype.loadQuestions = function(selector) {
         var _this = this;
 
-        this._model.getHomeView()
-            .then(function(questionsData) {
-                _this._model.getAllTags()
-                    .then(function(tagsData) {
-                        tagsData = tagsData.results;
+        Q.all([
+            this._model.getHomeView(),
+            this._model.getAllCategories(),
+            this._model.getAllTags(),
+        ]).then(function(data) {
+            var questionsData = data[0].results;
+            var categoriesData = data[1].results;
+            var tagsData = data[2].results;
 
-                        var outputData = {
-                            questions : questionsData.results
-                        };
+            var outputData = {
+                questions : questionsData,
+                categories : categoriesData,
+                tags : _this._model.formatTags(tagsData)
+            };
+            _this._model.formatQuestions(outputData, tagsData);
 
-                        for (var questionIndex in outputData.questions) {
-                            outputData.questions[questionIndex]['authorId'] = outputData.questions[questionIndex]['creator']['objectId'];
-                            outputData.questions[questionIndex]['authorName'] = outputData.questions[questionIndex]['creator']['username'];
-                            outputData.questions[questionIndex]['category'] = outputData.questions[questionIndex]['categoryId']['objectId'];
-                            outputData.questions[questionIndex]['categoryName'] = outputData.questions[questionIndex]['categoryId']['categoryName'];
-                            outputData.questions[questionIndex]['tags'] = '';
-
-                            var currentTags = tagsData.filter(function(obj) {
-                                if (obj.questionId.objectId === outputData.questions[questionIndex].objectId) {
-                                    outputData.questions[questionIndex]['tags'] += obj.name + ', ';
-                                }
-                            });
-                            outputData.questions[questionIndex]['tags'] = outputData.questions[questionIndex]['tags'].substring(0, outputData.questions[questionIndex]['tags'].length - 2);
-                        }
-
-                        app.homeView.render(_this, selector, outputData);
-                    }, function(error) {
-                        console.log(error.responseText);
-                    });
-            }, function(error) {
-                console.log(error.responseText);
-            });
+            app.homeView.render(_this, selector, outputData);
+        }, function(error) {
+            console.log(error);
+        });
     };
 
     Controller.prototype.addQuestion = function(selector, title, text, tags, categoryId) {
@@ -90,7 +78,7 @@ app.questionController = (function() {
             var questionData = {
                 'title': title,
                 'text': text,
-                'views' : 1,
+                'views' : 0,
                 'categoryId': {
                     '__type': 'Pointer',
                     'className': 'Category',
@@ -132,13 +120,32 @@ app.questionController = (function() {
                 });
         }
         else {
-            var outputData = questionValidator.getErrorMessages();
-            outputData.title = title;
-            outputData.text = text;
-            outputData.tags = tags;
+            this._model.getAllCategories()
+                .then(function(categoriesData) {
+                    var outputData = questionValidator.getErrorMessages();
+                    outputData.title = title;
+                    outputData.text = text;
+                    outputData.tags = tags;
+                    outputData.categories = categoriesData.results;
 
-            app.askQuestionView.render(this, selector, outputData);
+                    app.askQuestionView.render(_this, selector, outputData);
+                }, function(error) {
+                    console.log(error.responseText);
+                });
         }
+    };
+
+    Controller.prototype.loadAskQuestionPage = function(selector) {
+        var _this = this;
+
+        this._model.getAllCategories()
+            .then(function(categoriesData) {
+                var categories = { 'categories' : categoriesData.results };
+
+                app.askQuestionView.render(_this, selector, categories);
+            }, function(error) {
+                console.log(error.responseText);
+            });
     };
 
     Controller.prototype.loadQuestion = function(selector, objectId) {
@@ -219,7 +226,7 @@ app.questionController = (function() {
                         createdAt : data.createdAt
                     };
 
-                    // TODO: remove bugs when comment is valid
+                    app.errorView.render('#error-holder', {});
                     app.newAnswerView.render('#answers-holder', outputData);
                 }, function(error) {
                     console.log(error.responseText);
@@ -232,10 +239,6 @@ app.questionController = (function() {
 
             app.errorView.render('#error-holder', outputData);
         }
-    };
-
-    Controller.prototype.loadAskQuestionPage = function(selector){
-        app.askQuestionView.render(this, selector);
     };
 
     return {

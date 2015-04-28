@@ -23,10 +23,9 @@
 
                 <span>Select Category</span>
                 <select class="form-control" name="question-category" id="question-category">
-                    <option name="php" value="dCf1ljh5jp">PHP</option>
-                    <option name="c#" value="q3PWrjjKwj">C#</option>
-                    <option name="java" value="dX4ZipL9Rm">Java</option>
-                    <option name="javascript" value="p9mYEurTgl">JavaScript</option>
+                    {{#categories}}
+                        <option name="{{categoryName}}" value="{{objectId}}">{{categoryName}}</option>
+                    {{/categories}}
                 </select>
 
                 <div style="margin-bottom: 0; padding: 15px;" class="form-group">

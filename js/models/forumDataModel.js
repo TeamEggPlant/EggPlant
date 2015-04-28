@@ -32,6 +32,15 @@ app.forumDataModel = (function() {
         return deffer.promise;
     };
 
+    ForumDataModel.prototype.getAllCategories = function() {
+        var deffer = Q.defer();
+        var headers = this._headers.getHeaders();
+
+        deffer.resolve(this._requester.get(this._baseUrl  + 'classes/Category', headers));
+
+        return deffer.promise;
+    };
+
     ForumDataModel.prototype.getAllTags = function() {
         var deffer = Q.defer();
         var headers = this._headers.getHeaders();
@@ -85,6 +94,56 @@ app.forumDataModel = (function() {
 
         return deffer.promise;
     };
+
+    ForumDataModel.prototype.formatQuestions = function(data, tagsData) {
+        for (var questionIndex in data.questions) {
+            data.questions[questionIndex]['authorId'] = data.questions[questionIndex]['creator']['objectId'];
+            data.questions[questionIndex]['authorName'] = data.questions[questionIndex]['creator']['username'];
+            data.questions[questionIndex]['category'] = data.questions[questionIndex]['categoryId']['objectId'];
+            data.questions[questionIndex]['categoryName'] = data.questions[questionIndex]['categoryId']['categoryName'];
+            data.questions[questionIndex]['tags'] = '';
+
+            var currentTags = tagsData.filter(function(obj) {
+                if (obj.questionId.objectId === data.questions[questionIndex].objectId) {
+                    data.questions[questionIndex]['tags'] += obj.name + ', ';
+                }
+            });
+            data.questions[questionIndex]['tags'] = data.questions[questionIndex]['tags'].substring(0, data.questions[questionIndex]['tags'].length - 2);
+        }
+
+        return data;
+    }
+
+    ForumDataModel.prototype.formatTags = function(data) {
+        var tagsObjects = {};
+        var tags = [];
+        var totalTags = 0;
+
+        for (var tagIndex in data) {
+            var currentTag = data[tagIndex];
+
+            if (tagsObjects[currentTag.name]) {
+                tagsObjects[currentTag.name]['count']++;
+            }
+            else {
+                tagsObjects[currentTag.name] = {
+                    'name' : currentTag.name,
+                    'count' : 1
+                };
+            }
+
+            totalTags++;
+        }
+
+        for (var tagIndex in tagsObjects) {
+            var pad = '00';
+            tagsObjects[tagIndex].percent = Math.floor(tagsObjects[tagIndex].count / totalTags * 100) * 4;
+            //tagsObjects[tagIndex].percent = (pad + tagsObjects[tagIndex].percent).slice(-pad.length);
+            tags.push(tagsObjects[tagIndex]);
+        }
+
+        return tags;
+    }
 
     return {
         load: function(baseUrl, requester, headers, serviceClass) {

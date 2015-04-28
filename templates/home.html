@@ -20,22 +20,16 @@
         <section id="categories-tab">
             <h2>Categories</h2>
             <ul>
-                <li><a href="#category/0">C#</a></li>
-                <li><a href="#category/1">JS</a></li>
-                <li><a href="#category/2">Java</a></li>
-                <li><a href="#category/3">PHP</a></li>
+                {{#categories}}
+                    <li><a href="#/category/{{objectId}}">{{categoryName}}</a></li>
+                {{/categories}}
             </ul>
         </section>
         <section id="tags-tab">
             <h2>Tags</h2>
-            <a href="#tag/0">homework</a>
-            <a href="#tag/1">softuni</a>
-            <a href="#tag/2">teamwork</a>
-            <a href="#tag/3">project</a>
-            <a href="#tag/4">php</a>
-            <a href="#tag/5">help</a>
-            <a href="#tag/6">js</a>
-            <a href="#tag/7">exam</a>
+            {{#tags}}
+                <span style="font-size: {{percent}}pt">{{name}}</span>
+            {{/tags}}
         </section>
     </div>
 
