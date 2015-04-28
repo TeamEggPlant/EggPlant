@@ -18,7 +18,7 @@ app.rankingController = (function() {
 
             app.rankingView.render(_this, selector, usersRanking);
         }, function (error) {
-            console.log(error.responseText);
+            $.notify(error.responseJSON.error, {position: 'top center'});
         });
     };
 

@@ -133,7 +133,7 @@ app.forumDataModel = (function() {
             categoryName : questionData['categoryId']['categoryName'],
             authorId : questionData['creator']['objectId'],
             authorName : questionData['creator']['username'],
-            createdAt : questionData['createdAt'],
+            createdAt : ForumDataModel.prototype.formatDate(questionData['createdAt']),
             answers : questionAnswersData,
             tags: questionTags,
             views : questionViewsData.views
@@ -147,6 +147,7 @@ app.forumDataModel = (function() {
             questionsData[questionIndex]['category'] = questionsData[questionIndex]['categoryId']['objectId'];
             questionsData[questionIndex]['categoryName'] = questionsData[questionIndex]['categoryId']['categoryName'];
             questionsData[questionIndex]['tags'] = '';
+            questionsData[questionIndex]['createdAt'] = ForumDataModel.prototype.formatDate(questionsData[questionIndex]['createdAt']);
 
             tagsData.filter(function(obj) {
                 if (obj.questionId.objectId === questionsData[questionIndex].objectId) {
@@ -161,6 +162,18 @@ app.forumDataModel = (function() {
             categories : categoriesData,
             tags : ForumDataModel.prototype.formatTags(tagsData)
         };
+    }
+
+    ForumDataModel.prototype.formatDate = function(date) {
+        var date = new Date(date);
+        var day = date.getDay();
+        var month = date.getMonth();
+        var year = date.getFullYear();
+        var hours = date.getHours();
+        var minutes = date.getMinutes();
+        date = day + '-' + month + '-' + year + ', ' + hours + ':' + minutes;
+
+        return date;
     }
 
     ForumDataModel.prototype.formatTags = function(data) {
@@ -187,7 +200,7 @@ app.forumDataModel = (function() {
         for (var tagIndex in tagsObjects) {
             var pad = '00';
             tagsObjects[tagIndex].percent = Math.floor(tagsObjects[tagIndex].count / totalTags * 100) * 4;
-            //tagsObjects[tagIndex].percent = (pad + tagsObjects[tagIndex].percent).slice(-pad.length);
+            tagsObjects[tagIndex].percent = (pad + tagsObjects[tagIndex].percent).slice(-pad.length);
             tags.push(tagsObjects[tagIndex]);
         }
 

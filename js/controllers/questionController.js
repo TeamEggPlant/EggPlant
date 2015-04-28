@@ -14,7 +14,7 @@ app.questionController = (function() {
 
                 app.askQuestionView.render(_this, selector, categories);
             }, function (error) {
-                console.log(error.responseText);
+                $.notify(error.responseJSON.error, {position: 'top center'});
             });
     };
 
@@ -37,7 +37,7 @@ app.questionController = (function() {
                 app.questionView.render(_this, selector, outputData);
             },
             function(error) {
-                console.log(error);
+                $.notify(error.responseJSON.error, {position: 'top center'});
             });
     };
 
@@ -56,7 +56,7 @@ app.questionController = (function() {
 
             app.homeView.render(_this, selector, outputData);
         }, function(error) {
-            console.log(error);
+            $.notify(error.responseJSON.error, {position: 'top center'});
         });
     };
 
@@ -74,17 +74,11 @@ app.questionController = (function() {
             var answersData = data[2].results;
             var tagsData = data[3].results;
             var matchedQuestions = _this._model.extractMatchedQuestions(questionsData, answersData, tagsData, searchValue);
-
-            var outputData = {
-                questions : matchedQuestions,
-                categories : categoriesData,
-                tags : _this._model.formatTags(tagsData)
-            };
-            _this._model.formatQuestions(outputData, tagsData);
+            var outputData = _this._model.formatQuestions(matchedQuestions, categoriesData, tagsData);
 
             app.homeView.render(_this, selector, outputData);
         }, function(error) {
-            console.log(error);
+            $.notify(error.responseJSON.error, {position: 'top center'});
         });
     };
 
@@ -108,7 +102,7 @@ app.questionController = (function() {
 
                     app.askQuestionView.render(_this, selector, outputData);
                 }, function(error) {
-                    console.log(error.responseText);
+                    $.notify(error.responseJSON.error, {position: 'top center'});
                 });
         }
         else {
@@ -174,28 +168,34 @@ app.questionController = (function() {
                     .then(function (data) {
                         var tagsData = {'tags': []};
                         var splitTags = tags.split(',');
+                        var usedTags = {};
 
                         for (var tagIndex in splitTags) {
-                            var currentTag = {
-                                'name': splitTags[tagIndex].trim(),
-                                'questionId': {
-                                    '__type': 'Pointer',
-                                    'className': 'Question',
-                                    'objectId': data.objectId
-                                }
-                            };
+                            var currentTagName = splitTags[tagIndex].trim();
 
-                            tagsData.tags.push(currentTag);
+                            if (usedTags[currentTagName] === undefined) {
+                                var currentTag = {
+                                    'name': splitTags[tagIndex].trim(),
+                                    'questionId': {
+                                        '__type': 'Pointer',
+                                        'className': 'Question',
+                                        'objectId': data.objectId
+                                    }
+                                };
+
+                                tagsData.tags.push(currentTag);
+                                usedTags[currentTagName] = true;
+                            }
                         }
 
                         _this._model.addQuestionTags(tagsData)
                             .then(function (tagsData) {
                                 window.location = '#/view-post/' + data.objectId;
                             }, function (error) {
-                                console.log(error.responseText);
+                                $.notify(error.responseJSON.error, {position: 'top center'});
                             });
                     }, function (error) {
-                        console.log(error.responseText);
+                        $.notify(error.responseJSON.error, {position: 'top center'});
                     });
             }
             else {
@@ -207,10 +207,9 @@ app.questionController = (function() {
                         outputData.tags = tags;
                         outputData.categories = categoriesData.results;
 
-                        console.log(outputData);
                         app.askQuestionView.render(_this, selector, outputData);
                     }, function (error) {
-                        console.log(error.responseText);
+                        $.notify(error.responseJSON.error, {position: 'top center'});
                     });
             }
         }
@@ -265,14 +264,13 @@ app.questionController = (function() {
                         app.errorView.render('#error-holder', {});
                         app.newAnswerView.render('#answers-holder', outputData);
                     }, function(error) {
-                        console.log(error.responseText);
+                        $.notify(error.responseJSON.error, {position: 'top center'});
                     });
             }
             else {
                 var outputData = answerValidator.getErrorMessages();
                 outputData.error = outputData.errorMessages[0].message;
                 outputData.answer = commentData.answerBody;
-                console.log(outputData);
 
                 app.errorView.render('#error-holder', outputData);
             }

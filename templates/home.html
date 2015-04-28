@@ -1,21 +1,4 @@
 <div class="row">
-    <div class="col-md-8">
-        <ul>
-            <!-- SET THESE STYLES IN STYLE.CSS!!! -->
-            <li style="display: inline-block"><a href="#/ask-question">Ask question</a></li>
-            <li style="display: inline-block"><a href="#/question/0">Rules</a></li>
-            <li style="display: inline-block"><a href="#/ranking">Ranking</a></li>
-        </ul>
-    </div>
-    <div class="col-md-4">
-        <form method="post" id="search-form">
-            <input type="text" name="search" id="search-value" placeholder="Search..." />
-            <input type="submit" id="search" value="Seach" />
-        </form>
-    </div>
-</div>
-
-<div class="row">
     <div class="col-md-3">
         <section id="categories-tab">
             <h2>Categories</h2>
@@ -28,9 +11,13 @@
         <section id="tags-tab">
             <h2>Tags</h2>
             {{#tags}}
-                <span style="font-size: {{percent}}pt">{{name}}</span>
+                <span style="font-size: 1.{{percent}}em">{{name}}</span>
             {{/tags}}
         </section>
+        <form method="post" id="search-form" style="margin-top: 15px;">
+            <input type="text" name="search" id="search-value" placeholder="Question, answer or tag..." />
+            <input type="submit" id="search" value="Seach" />
+        </form>
     </div>
 
     <div class="col-md-9">
