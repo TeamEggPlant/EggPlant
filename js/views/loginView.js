@@ -8,11 +8,11 @@ app.loginView = (function() {
         })
         .then(function() {
             $('#login').click(function() {
-                // TODO: remember me functionality
                 var loginUsername = $('#login-username').val();
                 var loginPassword = $('#login-password').val();
+                var loginRememberMe = $('#login-remember').is(':checked');
 
-                controller.login('#wrapper', loginUsername, loginPassword);
+                controller.login('#wrapper', loginUsername, loginPassword, loginRememberMe);
             })
         });
     }

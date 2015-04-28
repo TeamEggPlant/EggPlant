@@ -8,10 +8,18 @@ app.forumDataModel = (function() {
         this._baseUrl = baseUrl;
     }
 
-    ForumDataModel.prototype.getHomeView = function() {
+    ForumDataModel.prototype.getAllQuestions = function(options) {
         var headers = this._headers.getHeaders();
+        var urlOptions = '?include=categoryId,creator&order=-createdAt';
 
-        return this._requester.get(this._serviceUrl + '?include=categoryId,creator&order=-createdAt', headers);
+        if (options !== undefined && options.category !== undefined) {
+            urlOptions += '&where={"categoryId":{"__type":"Pointer","className":"Category","objectId":"' + options.category + '"}}';
+        }
+        else if (options !== undefined && options.user !== undefined) {
+            urlOptions += '&where={"creator":{"__type":"Pointer","className":"_User","objectId":"' + options.user + '"}}'
+        }
+
+        return this._requester.get(this._serviceUrl + urlOptions, headers);
     };
 
     ForumDataModel.prototype.getQuestion = function(questionId) {

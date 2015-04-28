@@ -9,8 +9,8 @@
     </div>
     <div class="col-md-4">
         <form method="post" id="search-form">
-            <input type="text" name="search" id="search" placeholder="Search..." />
-            <input type="submit" value="Seach" />
+            <input type="text" name="search" id="search-value" placeholder="Search..." />
+            <input type="submit" id="search" value="Seach" />
         </form>
     </div>
 </div>
@@ -47,6 +47,9 @@
                 <span>Tags: <b>{{tags}}</b></span>
             </p>
         </article>
+        {{/questions}}
+        {{^questions}}
+            <h2>No questions found!</h2>
         {{/questions}}
     </div>
 </div>

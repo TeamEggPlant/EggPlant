@@ -1,13 +1,21 @@
 var app = app || {};
 
 app.authController = (function() {
-    function Controller(model) {
+    function Controller(model, cookies) {
         this._model = model;
+        this._cookies = cookies;
     }
 
     Controller.prototype.loadLoginPage = function(selector) {
         if (!sessionStorage['logged-in'] || !sessionStorage['userId'] || !sessionStorage['username']) {
-            app.loginView.render(this, selector);
+            var outputData = {};
+            var rememberMe = this._cookies.get('rememberMe');
+            if (rememberMe == 'yes') {
+                outputData.username = this._cookies.get('username');
+                outputData.rememberMe = 'checked';
+            }
+
+            app.loginView.render(this, selector, outputData);
         }
         else {
             window.location = '#/';
@@ -23,7 +31,7 @@ app.authController = (function() {
         }
     };
 
-    Controller.prototype.login = function(selector, username, password) {
+    Controller.prototype.login = function(selector, username, password, rememberMe) {
         var _this = this;
 
         var loginValidator = app.validator.load();
@@ -66,6 +74,13 @@ app.authController = (function() {
                     sessionStorage['logged-in'] = data.sessionToken;
                     sessionStorage['username'] = username;
                     sessionStorage['userId'] = data.objectId;
+                    if (rememberMe) {
+                        _this._cookies.set('rememberMe', 'yes');
+                        _this._cookies.set('username', username);
+                    }
+                    else {
+                        _this._cookies.set('rememberMe', 'no');
+                    }
 
                     window.location = '#/';
                 }, function(error) {
@@ -191,8 +206,8 @@ app.authController = (function() {
     }
 
     return {
-        load: function(model) {
-            return new Controller(model);
+        load: function(model, cookies) {
+            return new Controller(model, cookies);
         }
     }
 }());

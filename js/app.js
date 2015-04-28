@@ -7,12 +7,13 @@ var app = app || {};
 
 	var headers = app.headers.load(apiId, restAPIKey);
 	var requester = app.requester.load();
+    var cookies = app.cookies.load();
 
 	var questionModel = app.forumDataModel.load(apiURL, requester, headers, 'Question/');
 	var authModel = app.forumAuthModel.load(apiURL, requester, headers);
 
 	var questionController = app.questionController.load(questionModel);
-	var authController = app.authController.load(authModel);
+	var authController = app.authController.load(authModel, cookies);
 	var navigationController = app.navigationController.load(null);
 
     app.router = Sammy(function () {
@@ -24,17 +25,25 @@ var app = app || {};
             questionController.loadQuestions(selector);
         });
 
-        this.get('#/post', function() {
-            app.loadNavigationMenu('home-page');
-
-            questionController.loadQuestion(selector);
-        });
-
         this.get('#/view-post/:id', function() {
             app.loadNavigationMenu('home-page');
 
             var postId = this.params['id'];
             questionController.loadQuestion('#wrapper', postId);
+        });
+
+        this.get('#/category/:id', function() {
+            app.loadNavigationMenu('home-page');
+
+            var categoryId = this.params['id'];
+            questionController.loadQuestions('#wrapper', { 'category' : categoryId });
+        });
+
+        this.get('#/user/:id', function() {
+            app.loadNavigationMenu('home-page');
+
+            var userId = this.params['id'];
+            questionController.loadQuestions('#wrapper', { 'user' : userId });
         });
 
         this.get('#/login', function () {
@@ -59,6 +68,10 @@ var app = app || {};
 
             questionController.loadAskQuestionPage(selector);
         });
+
+        this.notFound = function() {
+            window.location = '#/';
+        }
     });
 
     app.loadNavigationMenu = function loadNavigationMenu(activePage) {

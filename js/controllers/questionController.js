@@ -5,11 +5,11 @@ app.questionController = (function() {
         this._model = model;
     }
 
-    Controller.prototype.loadQuestions = function(selector) {
+    Controller.prototype.loadQuestions = function(selector, options) {
         var _this = this;
 
         Q.all([
-            this._model.getHomeView(),
+            this._model.getAllQuestions(options),
             this._model.getAllCategories(),
             this._model.getAllTags(),
         ]).then(function(data) {

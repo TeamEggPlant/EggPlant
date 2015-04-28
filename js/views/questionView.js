@@ -7,8 +7,6 @@ app.questionView = (function() {
             $(selector).html(output);
         })
         .then(function() {
-            // TODO: check if user logged
-
             $('#add-answer').click(function() {
                 var questionId = data['objectId'];
                 var answerData = {
