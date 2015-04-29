@@ -164,10 +164,10 @@ app.forumDataModel = (function() {
         };
     }
 
-    ForumDataModel.prototype.formatDate = function(date) {
-        var date = new Date(date);
-        var day = date.getDay();
-        var month = date.getMonth();
+    ForumDataModel.prototype.formatDate = function(dateData) {
+        var date = new Date(dateData);
+        var day = date.getDate();
+        var month = date.getMonth() + 1;
         var year = date.getFullYear();
         var hours = date.getHours();
         var minutes = date.getMinutes();
