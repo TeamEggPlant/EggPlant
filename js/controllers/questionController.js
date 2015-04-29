@@ -215,8 +215,22 @@ app.questionController = (function() {
         }
     };
 
-    Controller.prototype.addComment = function(selector, commentData) {
+    Controller.prototype.addComment = function(selector, questionId, answerBody) {
         var _this = this;
+
+        var answerData = {
+            answerBody: answerBody,
+            questionId: {
+                '__type': 'Pointer',
+                'className': 'Question',
+                'objectId': questionId
+            },
+            creator: {
+                '__type': 'Pointer',
+                'className': '_User',
+                'objectId': sessionStorage['userId']
+            }
+        };
 
         if (!sessionStorage['logged-in'] || !sessionStorage['userId'] || !sessionStorage['username']) {
             var outputData = {
@@ -226,7 +240,7 @@ app.questionController = (function() {
                     }
                 ]
             };
-            outputData.answer = commentData.answerBody;
+            outputData.answer = answerData.answerBody;
             outputData.error = 'Please login in order to comment!';
 
             app.errorView.render('#error-holder', outputData);
@@ -246,16 +260,16 @@ app.questionController = (function() {
                     }
                 })
                 .setData({
-                    'answer': commentData.answerBody
+                    'answer': answerData.answerBody
                 })
                 .validate();
 
             var validAnswer = answerValidator.isValid();
             if (validAnswer) {
-                this._model.addComment(commentData)
+                this._model.addComment(answerData)
                     .then(function(data) {
                         var outputData = {
-                            answerBody : commentData.answerBody,
+                            answerBody : answerData.answerBody,
                             authorUserId : sessionStorage['userId'],
                             authorUsername : sessionStorage['username'],
                             createdAt : data.createdAt
@@ -270,7 +284,7 @@ app.questionController = (function() {
             else {
                 var outputData = answerValidator.getErrorMessages();
                 outputData.error = outputData.errorMessages[0].message;
-                outputData.answer = commentData.answerBody;
+                outputData.answer = answerData.answerBody;
 
                 app.errorView.render('#error-holder', outputData);
             }

@@ -9,21 +9,9 @@ app.questionView = (function() {
         .then(function() {
             $('#add-answer').click(function() {
                 var questionId = data['objectId'];
-                var answerData = {
-                    answerBody: $('#answer-body').val(),
-                    questionId: {
-                        '__type': 'Pointer',
-                        'className': 'Question',
-                        'objectId': questionId
-                    },
-                    creator: {
-                        '__type': 'Pointer',
-                        'className': '_User',
-                        'objectId': sessionStorage['userId']
-                    }
-                };
+                var answerBody = $('#answer-body').val();
 
-                controller.addComment('#answer-holder', answerData);
+                controller.addComment('#answer-holder', questionId, answerBody);
             });
         });
     }

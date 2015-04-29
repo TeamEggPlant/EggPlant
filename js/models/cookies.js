@@ -2,7 +2,6 @@ var app = app || {};
 
 app.cookies = (function() {
     function Cookies() {
-
     }
 
     Cookies.prototype.set = function (key, value) {
